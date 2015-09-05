@@ -254,5 +254,6 @@ $(window).on('resize', function(e){
 
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
+  $('body').css('background-color', 'lime');
   alert('slot clicked');
 });
