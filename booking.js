@@ -1,38 +1,37 @@
 var maxTicketCount = 7;
 var targetColumnWidth = 250;
 
-var dayNames = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-
-function formatHeaderDate(d){
-  return [dayNames[d.getDay()], '<br>', d.getMonth()+1, '/', d.getDate()];
-}
-
-function formatTime(text){
-  var parts = text.split(':');
-  var minutes = parts[1];
-  var hours = parts[0];
-  var hoursInt = parseInt(hours);
-  var ampm = hoursInt >= 12 ? 'PM' : 'AM';
-  if(hoursInt > 12) hoursInt %= 12;
-  return [hoursInt.toString(), ':', minutes, ' ', ampm];
-}
-
-function formatSlot(slot){
-  return [
-    formatTime(slot.time), '<br>',
-    slot.room, '<br>',
-    slot.remaining, ' spots left'
-  ];
-}
-
 // generate or regenerate the widget from surrounding dimensions and state data
 function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availabilities){
   var widget;
   var columnCount = Math.floor(width / targetColumnWidth);
   var columnWidth = Math.floor((width - 50 - 50) / columnCount);
   var arrowWidth = (width - columnWidth*columnCount) / 2;
-  var listHeight = height - (59 + 72 + 24);
+  var listHeight = height - (59 + 72 + 24 + 64);
+
   with(HTML){
+
+    var listHeading = table(tr(range(0, columnCount-1).map(function(i){
+      var d = dateAdd(baseDate, i);
+      var text = formatHeaderDate(d);
+      return th({style: 'width: '+columnWidth+'px'}, text);
+    })));
+
+    var listBody = table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
+      var d = dateAdd(baseDate, i);
+      var slots = availabilities.filter(function(slot){
+        return slot.date == encodeDate(d);
+      });
+      return td({style: 'width: '+columnWidth+'px'},
+        slots.map(function(slot){
+          return div(
+            {class: 'slot '+roomColor(slot.room), 'data-id': slot.id},
+            formatSlot(slot)
+          )
+        })
+      );
+    })));
+
     widget = element(
       div({class: 'booking-widget'},
         div({class: 'title'},
@@ -67,26 +66,10 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
         table({class: 'lower-section'},
           tr(
             td({class: "left-arrow"}, a({class: 'left-arrow arrow fa fa-arrow-left'})),
-            td(div({class: 'inner-container', style: 'height: '+listHeight+'px'}, table({class: 'inner-table'},
-                tr(range(0, columnCount-1).map(function(i){
-                    var d = dateAdd(baseDate, i);
-                    var text = formatHeaderDate(d);
-                    return th([text, div(text)]);
-                  })),
-                tr(range(0, columnCount-1).map(function(i){
-                    var d = dateAdd(baseDate, i);
-                    var slots = availabilities.filter(function(slot){
-                      return slot.date == encodeDate(d);
-                    });
-                    return td(
-                      slots.map(function(slot){
-                        return div(
-                          {class: 'slot', 'data-id': slot.id},
-                          formatSlot(slot)
-                        )
-                      })
-                    );
-                  }))))),
+            td(
+              div({class: 'list-heading'}, listHeading),
+              div({class: 'inner-container', style: 'height: '+listHeight+'px'}, listBody)
+            ),
             td({class: "right-arrow"}, a({class: 'right-arrow arrow fa fa-arrow-right'}))
           )
         )
@@ -103,39 +86,48 @@ var state = {
     {date: '2015-09-16', time: '10:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
     {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
     {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
     {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
+    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
     {date: '2015-09-18', time: '12:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-    {date: '2015-09-19', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
-    {date: '2015-09-20', time: '12:00:00', remaining: 6, room: 'B', id: 'XZXZ'},
+    {date: '2015-09-19', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
+    {date: '2015-09-20', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
   ],
   rooms: [
-    {id: 'IDZX', name: 'Mardi Gras Study'},
-    {id: 'IDXY', name: 'Jazz Music Parlor'}
+    {id: 'IDZX', name: 'Mardi Gras Study', color: 'mardi-gras-study'},
+    {id: 'IDXY', name: 'Jazz Music Parlor', color: 'jazz-music-parlor'}
   ]
 };
+
+function roomColor(room){
+  var i;
+  var L = state.rooms.length;
+  for(i=0; i<L; i++){
+    if(state.rooms[i].name == room) return state.rooms[i].color;
+  }
+  return 'color4';
+}
 
 function range(a, b){
   var r = [];
@@ -164,6 +156,31 @@ function zipWith(as, bs, f){
   }
   return r;
 }
+
+var dayNames = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+function formatHeaderDate(d){
+  return [dayNames[d.getDay()], '<br>', d.getMonth()+1, '/', d.getDate()];
+}
+
+function formatTime(text){
+  var parts = text.split(':');
+  var minutes = parts[1];
+  var hours = parts[0];
+  var hoursInt = parseInt(hours);
+  var ampm = hoursInt >= 12 ? 'PM' : 'AM';
+  if(hoursInt > 12) hoursInt %= 12;
+  return [hoursInt.toString(), ':', minutes, ' ', ampm];
+}
+
+function formatSlot(slot){
+  return [
+    formatTime(slot.time), '<br>',
+    slot.room, '<br>',
+    slot.remaining, ' spots left'
+  ];
+}
+
 
 function dateToday(){
   var now = new Date();

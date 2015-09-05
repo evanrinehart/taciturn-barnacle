@@ -81,11 +81,15 @@
 
 .booking-widget .lower-section {
   text-align: center;
+  font-size: 24px;
 }
 
 .booking-widget table {
-  font-size: 50px;
   width: 100%;
+}
+
+.booking-widget .arrow {
+  font-size: 50px;
 }
 
 .booking-widget .inner-table {
@@ -95,9 +99,6 @@
 
 .booking-widget .inner-table tr {
   vertical-align: top;
-}
-
-.booking-widget .inner-table th {
 }
 
 .booking-widget .inner-table th div {
@@ -116,3 +117,18 @@ body {
   background-color: black;
   color: gray;
 }
+
+.booking-widget .slot:hover{
+  color: white;
+}
+
+.booking-widget .slot{
+  margin-bottom: 25px;
+}
+
+.booking-widget .mardi-gras-study { color: #C1FFC1; }
+.booking-widget .jazz-music-parlor { color: #97FFFF; }
+.booking-widget .color3 { color: #FF3030; }
+.booking-widget .color4 { color: #FF82AB; }
+.booking-widget .color5 { color: #FFDAB9; }
+.booking-widget .color6 { color: #FFBBFF; }
