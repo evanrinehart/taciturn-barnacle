@@ -1,11 +1,14 @@
 var maxTicketCount = 7;
 var targetColumnWidth = 160;
 
-function filterWidget(fieldLabel, klass, valueLabel){
+function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon){
   with(HTML){
-    return span({class: 'filter-widget-group', 
-      fieldLabel ? label(fieldLabel) : '',
-      span({class: 'filter-widget '+klass}, valueLabel, i({class: 'fa fa-chevon-down'}))
+    return span({class: 'filter-widget-group '+containerClass},
+      (fieldLabel ? label(fieldLabel) : ''),
+      span({class: 'filter-widget '+buttonClass},
+        valueLabel,' ',
+        i({class: 'icon fa fa-'+icon}
+      ))
     );
   }
 }
@@ -48,38 +51,21 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
           a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'}))
         ),
         div({class: 'filter-section'},
-          div({class: 'select-room'},
-            selectWithConfig({
-              selected: room,
-              attributes: {name: 'room', style: 'width: '+(width-20)+'px'},
-              options: [].concat(
-                [{value: '', label: 'Any Room'}],
-                rooms.map(function(r){ return {value: r.id, label: r.name}; })
-              )
-            })
-          ),
-          div({class: 'filter-control'},
-            label("Ticket quantity"),
-            selectWithConfig({
-              selected: ticketCount,
-              attributes: {name: 'ticket-count'},
-              options: [].concat(
-                range(1, maxTicketCount).map(function(n){ return {value: n, label: n}; }),
-                [{value: 'too-many', label: (maxTicketCount+1)+'+'}]
-              )
-            })
-          ),
-          div({class: 'filter-control'}, label("Date"), input({name: 'date', value: baseDate}))
+          div({class: 'filter-widget-container'}, filterWidget('', room, 'full-width', 'select-room full-width', 'chevron-down')),
+          div(
+            filterWidget('Ticket quantity', ticketCount, 'cascading', 'select-ticket-count', 'chevron-down'),
+            filterWidget('Date', formatDateForButton(baseDate), 'cascading', 'select-date', 'calendar')
+          )
         ),
         div({class: 'clearfix'}),
         table({class: 'lower-section'},
           tr(
-            td({class: "left-arrow"}, a({class: 'left-arrow arrow fa fa-arrow-left'})),
+            td({class: "left-arrow"}, a({class: 'left-arrow arrow'}, '&lang;')),
             td(
               div({class: 'list-heading'}, listHeading),
               div({class: 'inner-container', style: 'height: '+listHeight+'px'}, listBody)
             ),
-            td({class: "right-arrow"}, a({class: 'right-arrow arrow fa fa-arrow-right'}))
+            td({class: "right-arrow"}, a({class: 'right-arrow arrow'}, '&rang;'))
           )
         )
       )
@@ -169,7 +155,7 @@ function zipWith(as, bs, f){
 var dayNames = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 
 function formatHeaderDate(d){
-  return [dayNames[d.getDay()], '<br>', d.getMonth()+1, '/', d.getDate()];
+  return [dayNames[d.getDay()], ' ', d.getMonth()+1, '/', d.getDate()];
 }
 
 function formatTime(text){
@@ -182,11 +168,15 @@ function formatTime(text){
   return [hoursInt.toString(), ':', minutes, ' ', ampm];
 }
 
+function formatDateForButton(d){
+  return "FORMAT DATE FOR BUTTON";
+}
+
 function formatSlot(slot){
   return [
     formatTime(slot.time), '<br>',
     slot.room, '<br>',
-    slot.remaining, ' spots left'
+    slot.remaining, ' tickets left'
   ];
 }
 
@@ -227,9 +217,8 @@ function trace(value){
 }
 
 
-
 function example(panelW, panelH){
-  return bookingWidget(panelW, panelH, "", 4, new Date(2015,8,17), state.rooms, state.availabilities);
+  return bookingWidget(panelW, panelH, "Any Room", 4, new Date(2015,8,17), state.rooms, state.availabilities);
 }
 
 

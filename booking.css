@@ -68,6 +68,7 @@
 .booking-widget {
   font-size: 20px;
   font-family: Roboto, sans-serif;
+/*  font-family: sans-serif;*/
   color: #f0f0f0;
   background-color: #0b0d11;
 }
@@ -90,6 +91,11 @@
   display: inline-block;
 }
 
+.booking-widget .arrow {
+  font-family: sans-serif;
+  font-size: 50px;
+}
+
 .booking-widget div.left-arrow {
   float: left;
 }
@@ -105,34 +111,34 @@
 
 .booking-widget table {
   width: 100%;
-}
-
-.booking-widget .arrow {
-  font-size: 50px;
+  border-spacing: 0;
 }
 
 .booking-widget .list-heading {
   overflow-y: scroll;
 }
 
+.booking-widget .list-heading th {
+  font-weight: normal;
+  border-right: 1px solid gray;
+  padding-bottom: 5px;
+}
+
 .booking-widget .inner-table {
-  text-align: center;
+  text-align: left;
 }
 
 .booking-widget .inner-table tr {
   vertical-align: top;
 }
 
-.booking-widget .inner-table th div {
-  color: gray;
-  position: absolute;
-  top: 134px;
-  padding: 4px 123px;
-  background: #0b0d11;
+.booking-widget .inner-table td {
+  border-right: 1px solid gray;
 }
 
 .booking-widget .inner-container {
-  overflow-y: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 body {
@@ -147,6 +153,7 @@ body {
 .booking-widget .slot{
   cursor: pointer;
   margin-bottom: 25px;
+  margin-left: 10px;
 }
 
 .booking-widget .mardi-gras-study { color: #C1FFC1; }
@@ -164,10 +171,58 @@ body {
 }
 
 .booking-widget .filter-section {
-  padding: 10px;
+  padding: 5px;
   font-size: 12px;
 }
 
 .booking-widget .filter-control {
   float: left;
+}
+
+.booking-widget .filter-widget-container {
+}
+
+.booking-widget .filter-widget {
+  border: 1px solid gray;
+  padding: 3px;
+  border-radius: 4px;
+}
+
+.booking-widget .filter-widget:hover {
+  border: 1px solid white;
+  color: white;
+  cursor: pointer;
+}
+
+.booking-widget .filter-widget:active {
+  border: 1px solid lime;
+  color: lime;
+}
+
+.booking-widget .filter-widget-group {
+  padding: 5px;
+}
+
+.booking-widget .filter-widget-group label {
+  margin-right: 5px;
+}
+
+.booking-widget .full-width {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.booking-widget .filter-widget-group.cascading {
+  display: inline-block;
+  margin-right: 15px;
+  margin-top: 4px;
+}
+
+.booking-widget .full-width .icon {
+  float: right;
+}
+
+.float-right {
+  float: right;
 }
