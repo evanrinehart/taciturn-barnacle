@@ -251,3 +251,8 @@ $(document).on('click', '.booking-widget .right-arrow', function(e){
 $(window).on('resize', function(e){
   dismissAllModals();
 });
+
+$(document).on('click', '.booking-widget .slot', function(e){
+  e.preventDefault();
+  alert('slot clicked');
+});

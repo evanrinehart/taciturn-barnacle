@@ -81,7 +81,7 @@
 
 .booking-widget .lower-section {
   text-align: center;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .booking-widget table {
@@ -90,6 +90,10 @@
 
 .booking-widget .arrow {
   font-size: 50px;
+}
+
+.booking-widget .list-heading {
+  overflow-y: scroll;
 }
 
 .booking-widget .inner-table {
