@@ -19,7 +19,7 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
   var columnCount = Math.floor(width / targetColumnWidth);
   var columnWidth = Math.floor((width - 50 - 50) / columnCount);
   var arrowWidth = (width - columnWidth*columnCount) / 2;
-  var listHeight = height - (59 + 72 + 24 + 64);
+  var listHeight = height - (58 + 70 + 27 + 10);
 
   with(HTML){
 
@@ -169,7 +169,7 @@ function formatTime(text){
 }
 
 function formatDateForButton(d){
-  return "FORMAT DATE FOR BUTTON";
+  return "Sep 30";
 }
 
 function formatSlot(slot){
