@@ -30,3 +30,8 @@ function dismissModalPanel(){
   overlay.remove();
 }
 
+function dismissAllModals(){
+  while(modalStack.length > 0){
+    dismissModalPanel();
+  }
+}

@@ -1,5 +1,5 @@
 var maxTicketCount = 7;
-var targetColumnWidth = 250;
+var targetColumnWidth = 160;
 
 // generate or regenerate the widget from surrounding dimensions and state data
 function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availabilities){
@@ -246,4 +246,8 @@ $(document).on('click', '.booking-widget .left-arrow', function(e){
 $(document).on('click', '.booking-widget .right-arrow', function(e){
   e.preventDefault();
   console.log('right arrow');
+});
+
+$(window).on('resize', function(e){
+  dismissAllModals();
 });
