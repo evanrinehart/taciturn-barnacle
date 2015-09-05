@@ -1,6 +1,15 @@
 var maxTicketCount = 7;
 var targetColumnWidth = 160;
 
+function filterWidget(fieldLabel, klass, valueLabel){
+  with(HTML){
+    return span({class: 'filter-widget-group', 
+      fieldLabel ? label(fieldLabel) : '',
+      span({class: 'filter-widget '+klass}, valueLabel, i({class: 'fa fa-chevon-down'}))
+    );
+  }
+}
+
 // generate or regenerate the widget from surrounding dimensions and state data
 function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availabilities){
   var widget;
@@ -38,20 +47,19 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
           h1({class: 'inline-block'}, "BOOKING"),
           a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'}))
         ),
-        div(
-          div(
-            label("Room"), 
+        div({class: 'filter-section'},
+          div({class: 'select-room'},
             selectWithConfig({
               selected: room,
-              attributes: {name: 'room'},
+              attributes: {name: 'room', style: 'width: '+(width-20)+'px'},
               options: [].concat(
                 [{value: '', label: 'Any Room'}],
                 rooms.map(function(r){ return {value: r.id, label: r.name}; })
               )
             })
           ),
-          div(
-            label("Tickets"),
+          div({class: 'filter-control'},
+            label("Ticket quantity"),
             selectWithConfig({
               selected: ticketCount,
               attributes: {name: 'ticket-count'},
@@ -61,8 +69,9 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
               )
             })
           ),
-          div(label("Date"), input({name: 'date', value: baseDate}))
+          div({class: 'filter-control'}, label("Date"), input({name: 'date', value: baseDate}))
         ),
+        div({class: 'clearfix'}),
         table({class: 'lower-section'},
           tr(
             td({class: "left-arrow"}, a({class: 'left-arrow arrow fa fa-arrow-left'})),
@@ -254,6 +263,5 @@ $(window).on('resize', function(e){
 
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
-  $('body').css('background-color', 'lime');
   alert('slot clicked');
 });

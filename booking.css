@@ -155,3 +155,19 @@ body {
 .booking-widget .color4 { color: #FF82AB; }
 .booking-widget .color5 { color: #FFDAB9; }
 .booking-widget .color6 { color: #FFBBFF; }
+
+.booking-widget .clearfix {
+  clear: both;
+}
+
+.booking-widget .select-room {
+}
+
+.booking-widget .filter-section {
+  padding: 10px;
+  font-size: 12px;
+}
+
+.booking-widget .filter-control {
+  float: left;
+}
