@@ -30,6 +30,15 @@
   margin-top: 2px;
   margin-right: 9px;
   cursor: pointer;
+  color: gray;
+}
+
+.booking-widget .close-button:hover {
+  color: white;
+}
+
+.booking-widget .close-button:active {
+  color: #ff8080;
 }
 
 .booking-widget .title {
@@ -39,6 +48,16 @@
 }
 
 .booking-widget .arrow {
+  color: gray;
+  cursor: pointer;
+}
+
+.booking-widget .arrow:hover {
+  color: white;
+}
+
+.booking-widget .arrow:active {
+  color: lime;
 }
 
 .booking-widget h1 {
@@ -48,7 +67,7 @@
 
 .booking-widget {
   font-size: 20px;
-  font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   color: #f0f0f0;
   background-color: #0b0d11;
 }
