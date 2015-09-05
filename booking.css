@@ -126,6 +126,7 @@ body {
 }
 
 .booking-widget .slot{
+  cursor: pointer;
   margin-bottom: 25px;
 }
 
