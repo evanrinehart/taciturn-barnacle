@@ -1,0 +1,118 @@
+
+.modal-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.modal-overlay.dark {
+  opacity: 0.5;
+  background-color: black;
+}
+
+.modal-panel {
+  position: fixed;
+  z-index: 11;
+  color: #f0f0f0;
+  background-color: #0b0d11;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.booking-widget .close-button {
+  font-size: 2em;
+  float: right;
+  margin-top: 2px;
+  margin-right: 9px;
+  cursor: pointer;
+}
+
+.booking-widget .title {
+  border-bottom: 1px solid #f0f0f0;
+  text-align: center;
+  padding: 5px;
+}
+
+.booking-widget .arrow {
+}
+
+.booking-widget h1 {
+  font-weight: normal;
+  margin: 0;
+}
+
+.booking-widget {
+  font-size: 20px;
+  font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+  color: #f0f0f0;
+  background-color: #0b0d11;
+}
+
+.booking-widget .availability-list {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+.booking-widget .availability-header {
+  text-align: center;
+}
+
+.booking-widget .available-slot {
+}
+
+.booking-widget .availability-list .column {
+  vertical-align: top;
+  display: inline-block;
+}
+
+.booking-widget div.left-arrow {
+  float: left;
+}
+
+.booking-widget div.right-arrow {
+  float: right;
+}
+
+.booking-widget .lower-section {
+  text-align: center;
+}
+
+.booking-widget table {
+  font-size: 50px;
+  width: 100%;
+}
+
+.booking-widget .inner-table {
+  font-size: 24px;
+  text-align: center;
+}
+
+.booking-widget .inner-table tr {
+  vertical-align: top;
+}
+
+.booking-widget .inner-table th {
+}
+
+.booking-widget .inner-table th div {
+  color: gray;
+  position: absolute;
+  top: 134px;
+  padding: 4px 123px;
+  background: #0b0d11;
+}
+
+.booking-widget .inner-container {
+  overflow-y: auto;
+}
+
+body {
+  background-color: black;
+  color: gray;
+}
