@@ -172,12 +172,12 @@ body {
   border: 1px solid gray;
   padding: 3px;
   border-radius: 4px;
+  cursor: pointer;
 }
 
 .booking-widget .filter-widget:hover {
   border: 1px solid white;
   color: white;
-  cursor: pointer;
 }
 
 .booking-widget .filter-widget:active {
@@ -201,7 +201,7 @@ body {
 
 .booking-widget .filter-widget-group.cascading {
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 5px;
   margin-top: 4px;
 }
 

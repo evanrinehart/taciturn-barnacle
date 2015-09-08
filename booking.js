@@ -162,6 +162,7 @@ function zipWith(as, bs, f){
 }
 
 var dayNames = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function formatHeaderDate(d){
   return [dayNames[d.getDay()], ' ', d.getMonth()+1, '/', d.getDate()];
@@ -178,7 +179,7 @@ function formatTime(text){
 }
 
 function formatDateForButton(d){
-  return "Sep 30";
+  return monthNames[d.getMonth()+1] + ' ' + d.getDate();
 }
 
 function formatSlot(slot){
