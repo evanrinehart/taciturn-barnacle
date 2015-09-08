@@ -1,4 +1,3 @@
-
 .modal-overlay {
   position: fixed;
   left: 0;
@@ -20,12 +19,8 @@
   background-color: #0b0d11;
 }
 
-.inline-block {
-  display: inline-block;
-}
-
-.booking-widget .close-button {
-  font-size: 2em;
+.modal-panel .close-button {
+  font-size: 42px;
   float: right;
   margin-top: 2px;
   margin-right: 9px;
@@ -33,24 +28,33 @@
   color: gray;
 }
 
-.booking-widget .close-button:hover {
+.modal-panel .close-button:hover {
   color: white;
 }
 
-.booking-widget .close-button:active {
+.modal-panel .close-button:active {
   color: #ff8080;
 }
 
-.booking-widget .title {
+.modal-panel .title {
   border-bottom: 1px solid #f0f0f0;
   text-align: center;
   padding: 5px;
 }
 
-.booking-widget .arrow {
-  color: gray;
-  cursor: pointer;
+.modal-panel h1 {
+  font-weight: normal;
+  margin: 0;
 }
+
+.modal-panel {
+  font-size: 20px;
+  font-family: Roboto, sans-serif;
+/*  font-family: sans-serif;*/
+  color: #f0f0f0;
+  background-color: #0b0d11;
+}
+
 
 .booking-widget .arrow:hover {
   color: white;
@@ -58,19 +62,6 @@
 
 .booking-widget .arrow:active {
   color: lime;
-}
-
-.booking-widget h1 {
-  font-weight: normal;
-  margin: 0;
-}
-
-.booking-widget {
-  font-size: 20px;
-  font-family: Roboto, sans-serif;
-/*  font-family: sans-serif;*/
-  color: #f0f0f0;
-  background-color: #0b0d11;
 }
 
 .booking-widget .availability-list {
@@ -83,15 +74,15 @@
   text-align: center;
 }
 
-.booking-widget .available-slot {
-}
-
 .booking-widget .availability-list .column {
   vertical-align: top;
   display: inline-block;
 }
 
 .booking-widget .arrow {
+  font-weight: bold;
+  color: gray;
+  cursor: pointer;
   font-family: sans-serif;
   font-size: 50px;
 }
@@ -147,21 +138,16 @@ body {
 }
 
 .booking-widget .slot:hover{
-  color: white;
+  border: 1px solid gray;
 }
 
-.booking-widget .slot{
-  cursor: pointer;
-  margin-bottom: 25px;
-  margin-left: 10px;
+.booking-widget .result{
+  margin-bottom: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: 1px solid #0b0d11;
+  padding-bottom: 5px;
 }
-
-.booking-widget .mardi-gras-study { color: #C1FFC1; }
-.booking-widget .jazz-music-parlor { color: #97FFFF; }
-.booking-widget .color3 { color: #FF3030; }
-.booking-widget .color4 { color: #FF82AB; }
-.booking-widget .color5 { color: #FFDAB9; }
-.booking-widget .color6 { color: #FFBBFF; }
 
 .booking-widget .clearfix {
   clear: both;
@@ -172,7 +158,7 @@ body {
 
 .booking-widget .filter-section {
   padding: 5px;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .booking-widget .filter-control {
@@ -226,3 +212,39 @@ body {
 .float-right {
   float: right;
 }
+
+
+.inline-block {
+  display: inline-block;
+}
+
+.booking-widget .result .time {
+  font-weight: 100;
+  color: gray;
+}
+
+.booking-widget .result .remaining {
+  font-size: 8pt;
+  color: #202020;
+  padding: 3px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.booking-widget .no-match {
+  color: gray;
+}
+
+
+.booking-widget .mardi-gras-study { color: #C1FFC1; }
+.booking-widget .jazz-music-parlor { color: #97FFFF; }
+.booking-widget .color3 { color: #FF3030; }
+.booking-widget .color4 { color: #FF82AB; }
+.booking-widget .color5 { color: #FFDAB9; }
+.booking-widget .color6 { color: #FFBBFF; }
+.booking-widget .bg-mardi-gras-study { background-color: #C1FFC1; }
+.booking-widget .bg-jazz-music-parlor { background-color: #97FFFF; }
+.booking-widget .bg-color3 { background-color: #FF3030; }
+.booking-widget .bg-color4 { background-color: #FF82AB; }
+.booking-widget .bg-color5 { background-color: #FFDAB9; }
+.booking-widget .bg-color6 { background-color: #FFBBFF; }

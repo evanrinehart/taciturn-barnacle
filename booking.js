@@ -19,7 +19,10 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
   var columnCount = Math.floor(width / targetColumnWidth);
   var columnWidth = Math.floor((width - 50 - 50) / columnCount);
   var arrowWidth = (width - columnWidth*columnCount) / 2;
-  var listHeight = height - (58 + 70 + 27 + 10);
+  var staticTitleHeight = 59;
+  var staticFiltersHeight = 78;
+  var staticHeadersHeight = 27;
+  var listHeight = height - (staticTitleHeight + staticFiltersHeight + staticHeadersHeight + 10);
 
   with(HTML){
 
@@ -34,14 +37,19 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
       var slots = availabilities.filter(function(slot){
         return slot.date == encodeDate(d);
       });
-      return td({style: 'width: '+columnWidth+'px'},
-        slots.map(function(slot){
+      var contents;
+      if(slots.length > 0){
+        contents = slots.map(function(slot){
           return div(
-            {class: 'slot '+roomColor(slot.room), 'data-id': slot.id},
+            {class: 'result slot '+roomColor(slot.room), 'data-id': slot.id},
             formatSlot(slot)
           )
-        })
-      );
+        });
+      }
+      else{
+        contents = div({class: 'result'}, "No matches for this date.");
+      }
+      return td({style: 'width: '+columnWidth+'px'}, contents);
     })));
 
     widget = element(
@@ -112,7 +120,8 @@ var state = {
   rooms: [
     {id: 'IDZX', name: 'Mardi Gras Study', color: 'mardi-gras-study'},
     {id: 'IDXY', name: 'Jazz Music Parlor', color: 'jazz-music-parlor'}
-  ]
+  ],
+  baseDate: new Date(2015, 8, 17)
 };
 
 function roomColor(room){
@@ -173,10 +182,12 @@ function formatDateForButton(d){
 }
 
 function formatSlot(slot){
+  var span = HTML.span;
+  var color = roomColor(slot.room);
   return [
-    formatTime(slot.time), '<br>',
-    slot.room, '<br>',
-    slot.remaining, ' tickets left'
+    span({class: 'time'}, formatTime(slot.time)), '<br>',
+    slot.room,' ',
+    span({class: 'remaining bg-'+color}, slot.remaining, ' tickets')
   ];
 }
 
@@ -253,4 +264,31 @@ $(window).on('resize', function(e){
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
   alert('slot clicked');
+});
+
+$(document).on('click', '.booking-widget .select-room', function(e){
+  e.preventDefault();
+});
+
+$(document).on('click', '.booking-widget .select-ticket-count', function(e){
+  e.preventDefault();
+});
+
+function calendarWidget(d){
+  return function(panelW, panelH){
+    with(HTML){
+      return element(div({class: 'calendar-widget'},
+        div({class: 'title'},
+          h1({class: 'inline-block'}, "SELECT DATE"),
+          a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'}))
+        ),
+        div([div(d.toString()), div(1, 2, 3, 4, 5)])
+      ));
+    }
+  }
+}
+
+$(document).on('click', '.booking-widget .select-date', function(e){
+  e.preventDefault();
+  summonModalPanel(calendarWidget(state.baseDate));
 });
