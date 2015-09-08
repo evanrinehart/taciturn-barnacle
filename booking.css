@@ -20,12 +20,11 @@
 }
 
 .modal-panel .close-button {
-  font-size: 42px;
+  font-size: 32px;
   float: right;
-  margin-top: 2px;
-  margin-right: 9px;
+  margin-top: -6px;
+  margin-right: 1px;
   cursor: pointer;
-  color: gray;
 }
 
 .modal-panel .close-button:hover {
@@ -37,12 +36,13 @@
 }
 
 .modal-panel .title {
-  border-bottom: 1px solid #f0f0f0;
   text-align: center;
-  padding: 5px;
+  background-color: gray;
+  color: black;
 }
 
 .modal-panel h1 {
+  font-size: 24px;
   font-weight: normal;
   margin: 0;
 }
