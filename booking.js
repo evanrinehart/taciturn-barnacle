@@ -24,7 +24,7 @@ function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon)
 }
 
 // generate or regenerate the widget from surrounding dimensions and state data
-function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availabilities){
+function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availabilities, loading){
   var widget;
   var columnCount = computeDynamicColumnCount(width);
   var columnWidth = Math.floor((width - 50 - 50) / columnCount);
@@ -36,31 +36,53 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
 
   with(HTML){
 
-    var listHeading = table(tr(range(0, columnCount-1).map(function(i){
-      var d = dateAdd(baseDate, i);
-      var text = formatHeaderDate(d);
-      return th({style: 'width: '+columnWidth+'px'}, text);
-    })));
+    if(loading){
+      var lowerSection = table({class: 'lower-section'},
+        tr(
+          td(),
+          td(i({class: 'fa fa-spinner fa-pulse'}), " LOADING"),
+          td()
+        )
+      );
+    }
+    else{
+      var listHeading = table(tr(range(0, columnCount-1).map(function(i){
+        var d = dateAdd(baseDate, i);
+        var text = formatHeaderDate(d);
+        return th({style: 'width: '+columnWidth+'px'}, text);
+      })));
 
-    var listBody = table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
-      var d = dateAdd(baseDate, i);
-      var slots = availabilities[encodeDate(d)];
-      var contents;
-      if(slots.length > 0){
-        contents = slots.map(function(slot){
-          return div(
-            {class: 'result slot '+roomColor(slot.room), 'data-id': slot.id},
-            formatSlot(slot)
-          )
-        });
-      }
-      else{
-        contents = div({class: 'result'}, "No matches for this date.");
-      }
-      return td({style: 'width: '+columnWidth+'px'}, contents);
-    })));
+      var listBody = table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
+        var d = dateAdd(baseDate, i);
+        var slots = availabilities[encodeDate(d)];
+        var contents;
+        if(slots.length > 0){
+          contents = slots.map(function(slot){
+            return div(
+              {class: 'result slot '+roomColor(slot.room), 'data-id': slot.id},
+              formatSlot(slot)
+            )
+          });
+        }
+        else{
+          contents = div({class: 'result'}, "No matches for this date.");
+        }
+        return td({style: 'width: '+columnWidth+'px'}, contents);
+      })));
 
-    widget = element(
+      var lowerSection = table({class: 'lower-section'},
+        tr(
+          td({class: "left-arrow"}, a({class: 'left-arrow arrow'}, '&lang;')),
+          td(
+            div({class: 'list-heading'}, listHeading),
+            div({class: 'inner-container', style: 'height: '+listHeight+'px'}, listBody)
+          ),
+          td({class: "right-arrow"}, a({class: 'right-arrow arrow'}, '&rang;'))
+        )
+      )
+    }
+
+    return element(
       div({class: 'booking-widget'},
         div({class: 'title'},
           h1({class: 'inline-block'}, "BUY TICKETS"),
@@ -73,20 +95,10 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
           )
         ),
         div({class: 'clearfix'}),
-        table({class: 'lower-section'},
-          tr(
-            td({class: "left-arrow"}, a({class: 'left-arrow arrow'}, '&lang;')),
-            td(
-              div({class: 'list-heading'}, listHeading),
-              div({class: 'inner-container', style: 'height: '+listHeight+'px'}, listBody)
-            ),
-            td({class: "right-arrow"}, a({class: 'right-arrow arrow'}, '&rang;'))
-          )
-        )
+        lowerSection
       )
     );
   }
-  return widget;
 }
 
 function roomColor(room){
@@ -205,7 +217,11 @@ console.log('RELOAD');
       });
     },
     fetching: function(){
-      /* loading panel */
+      withRooms(function(rooms){
+        summonModalPanel(function(panelW, panelH){
+          return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, {}, 'loading');
+        });
+      });
     },
     fetchDone: function(){
       reloadBookingUI();

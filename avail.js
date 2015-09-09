@@ -40,7 +40,13 @@ function fetchData(startDate, endDate, okCb, errorCb){
       ],
       '2015-09-17': [
         {time: '21:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-        {time: '22:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'}
+        {time: '22:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+        {time: '18:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
+        {time: '18:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
+        {time: '19:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
+        {time: '19:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'}
       ],
       '2015-09-18': [
         {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
@@ -70,7 +76,7 @@ function fetchData(startDate, endDate, okCb, errorCb){
     }
 
     okCb(results);
-  }, 200);
+  }, 1000);
 }
 
 function withAvailabilities(startDate, endDate, callbacks){
