@@ -55,14 +55,13 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
     widget = element(
       div({class: 'booking-widget'},
         div({class: 'title'},
-          h1({class: 'inline-block'}, "ESCAPE MY ROOM TICKETS"),
+          h1({class: 'inline-block'}, "BUY TICKETS"),
           a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'}))
         ),
         div({class: 'filter-section'},
-          div({class: 'filter-widget-container'}, filterWidget('', room, 'full-width', 'select-room full-width', 'chevron-down')),
           div(
-            filterWidget('Tickets', ticketCount, 'cascading', 'select-ticket-count', 'chevron-down'),
-            filterWidget('Date', formatDateForButton(baseDate), 'cascading', 'select-date', 'calendar')
+            filterWidget('',        room,        'cascading', 'select-room', 'chevron-down'),
+            filterWidget('Tickets', ticketCount, 'cascading', 'select-ticket-count', 'chevron-down')
           )
         ),
         div({class: 'clearfix'}),
