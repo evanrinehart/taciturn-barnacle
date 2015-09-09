@@ -247,6 +247,10 @@ body {
   padding-top: 50px;
 }
 
+.booking-widget.error-popup p {
+  margin-bottom: 40px;
+}
+
 .booking-widget.error-popup a {
   font-size: 24px;
   cursor: pointer;

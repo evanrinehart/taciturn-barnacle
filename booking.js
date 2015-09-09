@@ -227,7 +227,7 @@ console.log('RELOAD');
         summonModalPanel(function(){
           return element(div({class: 'booking-widget error-popup'},
             p(encode(message)),
-            a({class: 'modal-dismiss'}, 'OK')
+            div(a({class: 'modal-dismiss'}, 'OK'))
           ));
         });
       }
