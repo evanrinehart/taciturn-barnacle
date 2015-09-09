@@ -20,10 +20,10 @@
 }
 
 .modal-panel .close-button {
-  font-size: 32px;
+  font-size: 30px;
   float: right;
-  margin-top: -6px;
-  margin-right: 1px;
+  margin-top: -4px;
+  margin-right: 3px;
   cursor: pointer;
 }
 
