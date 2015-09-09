@@ -31,30 +31,30 @@ function fetchData(startDate, endDate, okCb, errorCb){
   setTimeout(function(){
     var results = {
       '2015-09-15': [
-        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-        {time: '22:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-        {time: '23:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'}
+        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
+        {time: '22:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
+        {time: '23:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'}
       ],
       '2015-09-16': [
-        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
+        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
       ],
       '2015-09-17': [
-        {time: '21:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-        {time: '22:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-        {time: '18:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-        {time: '18:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-        {time: '19:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-        {time: '19:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'}
+        {time: '21:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
+        {time: '22:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
+        {time: '18:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
+        {time: '18:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
+        {time: '19:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
+        {time: '19:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
+        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
+        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'}
       ],
       '2015-09-18': [
-        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'}
+        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
+        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'}
       ],
       '2015-09-19': [
-        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-        {time: '22:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'}
+        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
+        {time: '22:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'}
       ]
     };
 

@@ -93,7 +93,12 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
                 div({class: 'inner-container', style: 'height: '+listHeight+'px'},
                   table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
                     var d = dateAdd(baseDate, i);
-                    var slots = availabilities[encodeDate(d)];
+                    var slots = availabilities[encodeDate(d)].filter(function(av){
+console.log(av.id, room);
+                      if(room && av.id != room) return false;
+                      if(av.remaining < ticketCount) return false;
+                      return true;
+                    });
                     var contents;
                     if(slots.length > 0){
                       contents = slots.map(function(slot){
