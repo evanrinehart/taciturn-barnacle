@@ -16,8 +16,8 @@ function withRooms(callback){
   if(rooms === null){
     setTimeout(function(){
       rooms = [
-        {name: "Mardi Gras Study", color: 'mardi-gras-study', id: "ABCD1"},
-        {name: "Jazz Music Parlor", color: 'jazz-music-parlor', id: "ABCD2"}
+        {name: "Mardi Gras Study", id: "ABCD1"},
+        {name: "Jazz Music Parlor", id: "ABCD2"}
       ];
       callback(rooms);
     }, 100);
@@ -80,8 +80,6 @@ function fetchData(startDate, endDate, okCb, errorCb){
 }
 
 function withAvailabilities(startDate, endDate, callbacks){
-  callbacks.error("Sorry, there was a problem fetching availability data. Please try again later.");
-  return;
   var d;
   var needFetch = false;
   for(d=startDate; d<=endDate; d=dateAdd(d,1)){

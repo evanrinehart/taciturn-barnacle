@@ -11,6 +11,7 @@ function computeDynamicColumnCount(width){
   return Math.floor(width / targetColumnWidth);
 }
 
+/*
 function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon){
   with(HTML){
     return span({class: 'filter-widget-group '+containerClass},
@@ -22,8 +23,33 @@ function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon)
     );
   }
 }
+*/
 
+function roomSelect(roomId, rooms){
+  with(HTML){
+    return selectWithConfig({
+      options: [].concat(
+        [{value: 'any-room', label: 'Any Room'}],
+        rooms.map(function(r){ return {value: r.id, label: r.name}; })
+      ),
+      selected: roomId,
+      attributes: { name: 'select-room' }
+    });
+  }
+}
 
+function ticketSelect(ticketCount){
+  with(HTML){
+    return selectWithConfig({
+      options: [].concat(
+        range(1,7).map(function(n){ return {value: n, label: n}; }),
+        [{value: 'too-many', label: '8+'}]
+      ),
+      selected: ticketCount,
+      attributes: {name: 'select-ticket-count'}
+    });
+  }
+}
 
 // generate or regenerate the widget from surrounding dimensions and state data
 function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availabilities, loading){
@@ -46,8 +72,8 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
         ),
         div({class: 'filter-section'},
           div(
-            filterWidget('', (room||'Any Room'), 'cascading', 'select-room', 'chevron-down'),
-            filterWidget('Tickets', ticketCount, 'cascading', 'select-ticket-count', 'chevron-down')
+            span(roomSelect(room, rooms)),
+            span(label('Tickets'), ' ', ticketSelect(ticketCount))
           )
         ),
         div({class: 'clearfix'}),
@@ -163,13 +189,58 @@ $(document).on('click', '.booking-widget .slot', function(e){
   alert('slot clicked');
 });
 
+$(document).on('change', '.booking-widget [name="select-room"]', function(e){
+  e.preventDefault();
+  var roomId = $(this).val();
+  if(roomId == 'any-room'){
+    delete state.room;
+  }
+  else{
+    state.room = roomId;
+  }
+  reloadBookingUI();
+});
+
+$(document).on('change', '.booking-widget [name="select-ticket-count"]', function(e){
+  e.preventDefault();
+  var n = $(this).val();
+  if(n == 'too-many'){
+    alert("TOO MANY (call for more information!)");
+  }
+  else{
+    state.ticketCount = parseInt(n);
+  }
+  reloadBookingUI();
+});
+
+
+/*
+function summonSelectoPanel(options, action){
+  
+}
+
 $(document).on('click', '.booking-widget .select-room', function(e){
   e.preventDefault();
+  withRooms(function(rooms){
+    var options = rooms.map(function(room){
+      return {label: room.name, value: room.id};
+    });
+    summonSelectoPanel(options, function(room){
+      if(room == ''){
+        delete state.room;
+      }
+      else{
+        state.room = room;
+      }
+      reloadBookingUI();
+    });
+  });
 });
 
 $(document).on('click', '.booking-widget .select-ticket-count', function(e){
   e.preventDefault();
 });
+*/
 
 function calendarWidget(d){
   return function(panelW, panelH){
