@@ -7,6 +7,10 @@ var state = {
   ticketCount: 1
 };
 
+function computeDynamicColumnCount(width){
+  return Math.floor(width / targetColumnWidth);
+}
+
 function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon){
   with(HTML){
     return span({class: 'filter-widget-group '+containerClass},
@@ -22,7 +26,7 @@ function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon)
 // generate or regenerate the widget from surrounding dimensions and state data
 function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availabilities){
   var widget;
-  var columnCount = Math.floor(width / targetColumnWidth);
+  var columnCount = computeDynamicColumnCount(width);
   var columnWidth = Math.floor((width - 50 - 50) / columnCount);
   var arrowWidth = (width - columnWidth*columnCount) / 2;
   var staticTitleHeight = 59;
@@ -135,14 +139,16 @@ $(document).on('click', '.modal-overlay', function(e){
   dismissModalPanel();
 });
 
-$(document).on('click', '.booking-widget .left-arrow', function(e){
+$(document).on('click', '.booking-widget a.left-arrow', function(e){
   e.preventDefault();
-  console.log('left arrow');
+  state.baseDate = dateAdd(state.baseDate, -1);
+  reloadBookingUI();
 });
 
-$(document).on('click', '.booking-widget .right-arrow', function(e){
+$(document).on('click', '.booking-widget a.right-arrow', function(e){
   e.preventDefault();
-  console.log('right arrow');
+  state.baseDate = dateAdd(state.baseDate, 1);
+  reloadBookingUI();
 });
 
 $(window).on('resize', function(e){
@@ -181,16 +187,16 @@ $(document).on('click', '.booking-widget .select-date', function(e){
   summonModalPanel(calendarWidget(state.baseDate));
 });
 
-
 /* use this to open the panel or reload it after something has changed */
 function reloadBookingUI(){
+console.log('RELOAD');
   var baseDate = state.baseDate;
-  var startDate = dateAdd(baseDate, -10);
-  var endDate = dateAdd(baseDate, 10);
+  var width = $(window).width();
+  var columns = computeDynamicColumnCount(width);
   var tickets = state.ticketCount;
   var room = state.room;
   dismissAllModals();
-  withAvailabilities(startDate, endDate, {
+  withAvailabilities(baseDate, dateAdd(baseDate, columns), {
     now: function(availabilities){
       withRooms(function(rooms){
         summonModalPanel(function(panelW, panelH){
@@ -199,14 +205,17 @@ function reloadBookingUI(){
       });
     },
     fetching: function(){
-      alert("LOADING...");
       /* loading panel */
     },
     fetchDone: function(){
       reloadBookingUI();
     },
     error: function(message){
-      alert(message);
+      state.baseDate = dateToday();
+      state.tickets = 1;
+      clearData();
+      dismissAllModals();
+      console.log(message);
       /* error message */
     }
   });
