@@ -261,6 +261,21 @@ $(document).on('click', '.booking-widget .select-date', function(e){
   summonModalPanel(calendarWidget(state.baseDate));
 });
 
+function mainPanelVisible(){
+}
+
+function reloadMainModalPanel(ctor){
+  var panel = $('.modal-panel');
+  if(panel.length > 0){
+    var content = ctor(panel.width(), panel.height());
+    panel.empty();
+    panel.append(content);
+  }
+  else{
+    summonModalPanel(ctor);
+  }
+}
+
 /* use this to open the panel or reload it after something has changed */
 function reloadBookingUI(){
 console.log('RELOAD');
@@ -269,18 +284,17 @@ console.log('RELOAD');
   var columns = computeDynamicColumnCount(width);
   var tickets = state.ticketCount;
   var room = state.room;
-  dismissAllModals();
   withAvailabilities(baseDate, dateAdd(baseDate, columns), {
     now: function(availabilities){
       withRooms(function(rooms){
-        summonModalPanel(function(panelW, panelH){
+        reloadMainModalPanel(function(panelW, panelH){
           return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, availabilities);
         });
       });
     },
     fetching: function(){
       withRooms(function(rooms){
-        summonModalPanel(function(panelW, panelH){
+        reloadMainModalPanel(function(panelW, panelH){
           return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, {}, 'loading');
         });
       });
