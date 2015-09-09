@@ -1,6 +1,12 @@
 var maxTicketCount = 7;
 var targetColumnWidth = 160;
 
+var state = {
+  baseDate: new Date(2015, 8, 17),
+  room: undefined,
+  ticketCount: 1
+};
+
 function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon){
   with(HTML){
     return span({class: 'filter-widget-group '+containerClass},
@@ -34,9 +40,7 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
 
     var listBody = table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
       var d = dateAdd(baseDate, i);
-      var slots = availabilities.filter(function(slot){
-        return slot.date == encodeDate(d);
-      });
+      var slots = availabilities[encodeDate(d)];
       var contents;
       if(slots.length > 0){
         contents = slots.map(function(slot){
@@ -60,7 +64,7 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
         ),
         div({class: 'filter-section'},
           div(
-            filterWidget('',        room,        'cascading', 'select-room', 'chevron-down'),
+            filterWidget('', (room||'Any Room'), 'cascading', 'select-room', 'chevron-down'),
             filterWidget('Tickets', ticketCount, 'cascading', 'select-ticket-count', 'chevron-down')
           )
         ),
@@ -81,87 +85,13 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
   return widget;
 }
 
-var state = {
-  availabilities: [
-    {date: '2015-09-15', time: '10:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-15', time: '11:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-16', time: '10:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
-    {date: '2015-09-17', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
-    {date: '2015-09-18', time: '12:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'XZXZ'},
-    {date: '2015-09-19', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
-    {date: '2015-09-20', time: '12:00:00', remaining: 6, room: 'Other Room', id: 'XZXZ'},
-  ],
-  rooms: [
-    {id: 'IDZX', name: 'Mardi Gras Study', color: 'mardi-gras-study'},
-    {id: 'IDXY', name: 'Jazz Music Parlor', color: 'jazz-music-parlor'}
-  ],
-  baseDate: new Date(2015, 8, 17)
-};
-
 function roomColor(room){
-  var i;
-  var L = state.rooms.length;
-  for(i=0; i<L; i++){
-    if(state.rooms[i].name == room) return state.rooms[i].color;
+  switch(room){
+    case 'Mardi Gras Study': return 'mardi-gras-study';
+    case 'Jazz Music Parlor': return 'jazz-music-parlor';
+    default: return 'color4';
   }
-  return 'color4';
 }
-
-function range(a, b){
-  var r = [];
-  var i;
-  for(i=a; i<=b; i++){
-    r.push(i);
-  }
-  return r;
-}
-
-function replicate(x, n){
-  var r = [];
-  var i;
-  for(i=0; i<n; i++){
-    r.push(x);
-  }
-  return r;
-}
-
-function zipWith(as, bs, f){
-  var i;
-  var L = as.length;
-  var r = [];
-  for(i=0; i<L; i++){
-    r.push(f(as[i], bs[i]));
-  }
-  return r;
-}
-
-var dayNames = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function formatHeaderDate(d){
   return [dayNames[d.getDay()], ' ', d.getMonth()+1, '/', d.getDate()];
@@ -191,51 +121,9 @@ function formatSlot(slot){
   ];
 }
 
-
-function dateToday(){
-  var now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-}
-
-function dateAdd(d, n){
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()+n);
-}
-
-function readDate(text){
-  var parts = text.split('-');
-  var year = parseInt(parts[0]);
-  var month = parseInt(parts[1]);
-  var day = parseInt(parts[2]);
-  return new Date(year, month-1, day);
-}
-
-function encodeDate(d){
-  function pad(x){
-    if(x.length < 2) return '0'+x;
-    else return x;
-  }
-
-  return [
-    d.getFullYear(),
-    pad((d.getMonth()+1).toString()),
-    pad(d.getDate().toString())
-  ].join('-');
-}
-
-function trace(value){
-  console.log('TRACE', value); 
-  return value;
-}
-
-
-function example(panelW, panelH){
-  return bookingWidget(panelW, panelH, "Any Room", 4, new Date(2015,8,17), state.rooms, state.availabilities);
-}
-
-
 $(document).on('click', '#buy-tickets', function(e){
   e.preventDefault(); 
-  summonModalPanel(example);
+  reloadBookingUI();
 });
 
 $(document).on('click', '.modal-dismiss', function(e){
@@ -292,3 +180,35 @@ $(document).on('click', '.booking-widget .select-date', function(e){
   e.preventDefault();
   summonModalPanel(calendarWidget(state.baseDate));
 });
+
+
+/* use this to open the panel or reload it after something has changed */
+function reloadBookingUI(){
+  var baseDate = state.baseDate;
+  var startDate = dateAdd(baseDate, -10);
+  var endDate = dateAdd(baseDate, 10);
+  var tickets = state.ticketCount;
+  var room = state.room;
+  dismissAllModals();
+  withAvailabilities(startDate, endDate, {
+    now: function(availabilities){
+      withRooms(function(rooms){
+        summonModalPanel(function(panelW, panelH){
+          return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, availabilities);
+        });
+      });
+    },
+    fetching: function(){
+      alert("LOADING...");
+      /* loading panel */
+    },
+    fetchDone: function(){
+      reloadBookingUI();
+    },
+    error: function(message){
+      alert(message);
+      /* error message */
+    }
+  });
+}
+

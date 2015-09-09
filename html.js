@@ -121,6 +121,8 @@ var HTML;
           var L = tree.length;
           for(i=0; i<L; i++){ flattenR(tree[i], a); }
           break;
+        case 'Undefined': a.push('undefined'); break;
+        case 'Null': a.push('null'); break;
         default:
           console.log(tree);
           throw new Error("bad tree");
