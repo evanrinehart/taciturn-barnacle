@@ -80,6 +80,8 @@ function fetchData(startDate, endDate, okCb, errorCb){
 }
 
 function withAvailabilities(startDate, endDate, callbacks){
+  callbacks.error("Sorry, there was a problem fetching availability data. Please try again later.");
+  return;
   var d;
   var needFetch = false;
   for(d=startDate; d<=endDate; d=dateAdd(d,1)){

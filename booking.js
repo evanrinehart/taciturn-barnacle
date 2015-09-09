@@ -223,7 +223,14 @@ console.log('RELOAD');
       clearData();
       dismissAllModals();
       console.log(message);
-      /* error message */
+      with(HTML){
+        summonModalPanel(function(){
+          return element(div({class: 'booking-widget error-popup'},
+            p(encode(message)),
+            a({class: 'modal-dismiss'}, 'OK')
+          ));
+        });
+      }
     }
   });
 }
