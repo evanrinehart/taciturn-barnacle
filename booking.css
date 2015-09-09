@@ -141,6 +141,10 @@ body {
   border: 1px solid gray;
 }
 
+.booking-widget .slot {
+  cursor: pointer;
+}
+
 .booking-widget .result{
   margin-bottom: 20px;
   margin-left: 5px;
