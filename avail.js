@@ -76,7 +76,7 @@ function fetchData(startDate, endDate, okCb, errorCb){
     }
 
     okCb(results);
-  }, 1000);
+  }, 700);
 }
 
 function withAvailabilities(startDate, endDate, callbacks){

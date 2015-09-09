@@ -79,6 +79,10 @@
   display: inline-block;
 }
 
+.booking-widget .loading {
+  font-size: 36px;
+}
+
 .booking-widget .arrow {
   font-weight: bold;
   color: gray;
@@ -175,7 +179,6 @@ body {
 .booking-widget .filter-widget {
   border: 1px solid gray;
   padding: 3px;
-  border-radius: 4px;
   cursor: pointer;
 }
 

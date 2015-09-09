@@ -17,11 +17,13 @@ function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon)
       (fieldLabel ? label(fieldLabel) : ''),
       span({class: 'filter-widget '+buttonClass},
         valueLabel,' ',
-        i({class: 'icon fa fa-'+icon}
-      ))
+        span("▼")
+      )
     );
   }
 }
+
+
 
 // generate or regenerate the widget from surrounding dimensions and state data
 function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availabilities, loading){
@@ -29,58 +31,12 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
   var columnCount = computeDynamicColumnCount(width);
   var columnWidth = Math.floor((width - 50 - 50) / columnCount);
   var arrowWidth = (width - columnWidth*columnCount) / 2;
-  var staticTitleHeight = 59;
-  var staticFiltersHeight = 78;
+  var staticTitleHeight = 28;
+  var staticFiltersHeight = 42;
   var staticHeadersHeight = 27;
   var listHeight = height - (staticTitleHeight + staticFiltersHeight + staticHeadersHeight + 10);
 
   with(HTML){
-
-    if(loading){
-      var lowerSection = table({class: 'lower-section'},
-        tr(
-          td(),
-          td(i({class: 'fa fa-spinner fa-pulse'}), " LOADING"),
-          td()
-        )
-      );
-    }
-    else{
-      var listHeading = table(tr(range(0, columnCount-1).map(function(i){
-        var d = dateAdd(baseDate, i);
-        var text = formatHeaderDate(d);
-        return th({style: 'width: '+columnWidth+'px'}, text);
-      })));
-
-      var listBody = table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
-        var d = dateAdd(baseDate, i);
-        var slots = availabilities[encodeDate(d)];
-        var contents;
-        if(slots.length > 0){
-          contents = slots.map(function(slot){
-            return div(
-              {class: 'result slot '+roomColor(slot.room), 'data-id': slot.id},
-              formatSlot(slot)
-            )
-          });
-        }
-        else{
-          contents = div({class: 'result'}, "No matches for this date.");
-        }
-        return td({style: 'width: '+columnWidth+'px'}, contents);
-      })));
-
-      var lowerSection = table({class: 'lower-section'},
-        tr(
-          td({class: "left-arrow"}, a({class: 'left-arrow arrow'}, '&lang;')),
-          td(
-            div({class: 'list-heading'}, listHeading),
-            div({class: 'inner-container', style: 'height: '+listHeight+'px'}, listBody)
-          ),
-          td({class: "right-arrow"}, a({class: 'right-arrow arrow'}, '&rang;'))
-        )
-      )
-    }
 
     return element(
       div({class: 'booking-widget'},
@@ -95,7 +51,42 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
           )
         ),
         div({class: 'clearfix'}),
-        lowerSection
+        table({class: 'lower-section'},
+          loading ?
+            tr({class: 'loading'}, td(), td(i({class: 'fa fa-spinner fa-pulse'}), " LOADING"), td()) :
+            tr(
+              td({class: "left-arrow"}, a({class: 'left-arrow arrow'}, '&lang;')),
+              td(
+                div({class: 'list-heading'},
+                  table(tr(range(0, columnCount-1).map(function(i){
+                    var d = dateAdd(baseDate, i);
+                    var text = formatHeaderDate(d);
+                    return th({style: 'width: '+columnWidth+'px'}, text);
+                  })))
+                ),
+                div({class: 'inner-container', style: 'height: '+listHeight+'px'},
+                  table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
+                    var d = dateAdd(baseDate, i);
+                    var slots = availabilities[encodeDate(d)];
+                    var contents;
+                    if(slots.length > 0){
+                      contents = slots.map(function(slot){
+                        return div(
+                          {class: 'result slot '+roomColor(slot.room), 'data-id': slot.id},
+                          formatSlot(slot)
+                        )
+                      });
+                    }
+                    else{
+                      contents = div({class: 'result'}, "No matches for this date.");
+                    }
+                    return td({style: 'width: '+columnWidth+'px'}, contents);
+                  })))
+                )
+              ),
+              td({class: "right-arrow"}, a({class: 'right-arrow arrow'}, '&rang;'))
+            )
+        )
       )
     );
   }
