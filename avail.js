@@ -14,13 +14,17 @@ function clearData(){
 
 function withRooms(callback){
   if(rooms === null){
-    setTimeout(function(){
-      rooms = [
-        {name: "Mardi Gras Study", id: "ABCD1"},
-        {name: "Jazz Music Parlor", id: "ABCD2"}
-      ];
-      callback(rooms);
-    }, 100);
+    $.ajax({
+      url: "https://booking.escapemyroom.com/api/rooms",
+      success: function(data){
+        rooms = data;
+        callback(rooms);
+      },
+      error: function(xhr){
+        console.log(xhr);
+        callback([]);
+      }
+    });
   }
   else{
     callback(rooms);

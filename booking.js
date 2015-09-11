@@ -94,7 +94,6 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
                   table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
                     var d = dateAdd(baseDate, i);
                     var slots = availabilities[encodeDate(d)].filter(function(av){
-console.log(av.id, room);
                       if(room && av.id != room) return false;
                       if(av.remaining < ticketCount) return false;
                       return true;
@@ -307,45 +306,42 @@ function reloadMainModalPanel(ctor){
 
 /* use this to open the panel or reload it after something has changed */
 function reloadBookingUI(){
-console.log('RELOAD');
   var baseDate = state.baseDate;
   var width = $(window).width();
   var columns = computeDynamicColumnCount(width);
   var tickets = state.ticketCount;
   var room = state.room;
-  withAvailabilities(baseDate, dateAdd(baseDate, columns), {
-    now: function(availabilities){
-      withRooms(function(rooms){
+  withRooms(function(rooms){
+    withAvailabilities(baseDate, dateAdd(baseDate, columns), {
+      now: function(availabilities){
         reloadMainModalPanel(function(mode, w, h){
           return bookingWidget(w, h, room, tickets, baseDate, rooms, availabilities);
         });
-      });
-    },
-    fetching: function(){
-      withRooms(function(rooms){
+      },
+      fetching: function(){
         reloadMainModalPanel(function(mode, panelW, panelH){
           return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, {}, 'loading');
         });
-      });
-    },
-    fetchDone: function(){
-      reloadBookingUI();
-    },
-    error: function(message){
-      state.baseDate = dateToday();
-      state.tickets = 1;
-      clearData();
-      dismissAllModals();
-      console.log(message);
-      with(HTML){
-        summonModalPanel(function(mode, w, h){
-          return element(div({class: 'booking-widget error-popup', style: mode=='small'?'width:500px':''},
-            p(encode(message)),
-            div(a({class: 'modal-dismiss'}, 'OK'))
-          ));
-        });
+      },
+      fetchDone: function(){
+        reloadBookingUI();
+      },
+      error: function(message){
+        state.baseDate = dateToday();
+        state.tickets = 1;
+        clearData();
+        dismissAllModals();
+        console.log(message);
+        with(HTML){
+          summonModalPanel(function(mode, w, h){
+            return element(div({class: 'booking-widget error-popup', style: mode=='small'?'width:500px':''},
+              p(encode(message)),
+              div(a({class: 'modal-dismiss'}, 'OK'))
+            ));
+          });
+        }
       }
-    }
+    });
   });
 }
 
