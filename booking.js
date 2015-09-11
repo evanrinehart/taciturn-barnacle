@@ -191,7 +191,31 @@ $(window).on('resize', function(e){
 
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
-  alert('slot clicked');
+  /*
+pop up a dialog for the user to fill out their information:
+room (readonly)
+number of tickets (pre-filled, but you can modify)
+first name
+last name
+email
+phone
+coupon code
+cc number
+cc cvc
+cc expr month
+cc expr year
+  */
+  summonModalPanel(function(mode, w, h){
+    with(HTML){
+      return element(div({class: 'checkout-panel', style:mode=='small'?'width: 700px':''},
+        div({class: 'title'},
+          h1({class: 'inline-block'}, "CHECKOUT"),
+          mode=='large'?a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'})):''
+        ),
+        div("A B C D E")
+      ));
+    }
+  });
 });
 
 $(document).on('change', '.booking-widget [name="select-room"]', function(e){
@@ -263,7 +287,7 @@ function calendarWidget(d){
 
 $(document).on('click', '.booking-widget .select-date', function(e){
   e.preventDefault();
-  summonModalPanel(calendarWidget(state.baseDate));
+//  summonModalPanel(calendarWidget(state.baseDate));
 });
 
 function mainPanelVisible(){
@@ -272,12 +296,12 @@ function mainPanelVisible(){
 function reloadMainModalPanel(ctor){
   var panel = $('.modal-panel');
   if(panel.length > 0){
-    var content = ctor(panel.width(), panel.height());
+    var content = ctor('expand', panel.width(), panel.height());
     panel.empty();
     panel.append(content);
   }
   else{
-    summonModalPanel(ctor);
+    summonFullScreenModalPanel(ctor);
   }
 }
 
@@ -292,14 +316,14 @@ console.log('RELOAD');
   withAvailabilities(baseDate, dateAdd(baseDate, columns), {
     now: function(availabilities){
       withRooms(function(rooms){
-        reloadMainModalPanel(function(panelW, panelH){
+        reloadMainModalPanel(function(mode, w, h){
           return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, availabilities);
         });
       });
     },
     fetching: function(){
       withRooms(function(rooms){
-        reloadMainModalPanel(function(panelW, panelH){
+        reloadMainModalPanel(function(mode, panelW, panelH){
           return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, {}, 'loading');
         });
       });
@@ -314,8 +338,8 @@ console.log('RELOAD');
       dismissAllModals();
       console.log(message);
       with(HTML){
-        summonModalPanel(function(){
-          return element(div({class: 'booking-widget error-popup'},
+        summonModalPanel(function(mode, w, h){
+          return element(div({class: 'booking-widget error-popup', style: mode=='small'?'width:500px':''},
             p(encode(message)),
             div(a({class: 'modal-dismiss'}, 'OK'))
           ));

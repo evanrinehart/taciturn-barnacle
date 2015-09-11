@@ -244,11 +244,11 @@ body {
 
 .booking-widget.error-popup {
   text-align: center;
-  padding-top: 50px;
 }
 
-.booking-widget.error-popup p {
-  margin-bottom: 40px;
+.booking-widget.error-popup div {
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 .booking-widget.error-popup a {
