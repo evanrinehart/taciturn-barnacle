@@ -317,7 +317,7 @@ console.log('RELOAD');
     now: function(availabilities){
       withRooms(function(rooms){
         reloadMainModalPanel(function(mode, w, h){
-          return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, availabilities);
+          return bookingWidget(w, h, room, tickets, baseDate, rooms, availabilities);
         });
       });
     },
