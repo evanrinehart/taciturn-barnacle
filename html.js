@@ -11,6 +11,19 @@ var HTML;
     };
   }
 
+  function encodeDate(d){
+    function pad(x){
+      if(x.length < 2) return '0'+x;
+      else return x;
+    }
+
+    return [
+      d.getFullYear(),
+      pad((d.getMonth()+1).toString()),
+      pad(d.getDate().toString())
+    ].join('-');
+  }
+
   function htmlEncode(s){
     return s
       .replace(/&/g, '&amp;')
@@ -126,6 +139,7 @@ var HTML;
           break;
         case 'Undefined': a.push('undefined'); break;
         case 'Null': a.push('null'); break;
+        case 'Date': a.push(encodeDate(tree)); break;
         default:
           console.log(tree);
           throw new Error("bad tree");

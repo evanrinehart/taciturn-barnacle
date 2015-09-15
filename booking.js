@@ -112,6 +112,8 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
                             class: 'result slot '+roomColor(slot.room),
                             'data-room-id': slot.id,
                             'data-room-name': slot.room,
+                            'data-date': encodeDate(d),
+                            'data-time': slot.time,
                             'data-remaining-tickets': slot.remaining
                           },
                           formatSlot(slot)
@@ -205,7 +207,7 @@ $(document).on('click', '.booking-widget .slot', function(e){
   var room_name = $(this).attr('data-room-name');
   var desired_ticket_count = $('[name="select-ticket-count"]').val();
   var remaining_tickets = $(this).attr('data-remaining-tickets');
-  var date = $(this).attr('data-date');
+  var date = readDate($(this).attr('data-date'));
   var time = $(this).attr('data-time');
   summonModalPanel(function(mode, w, h){
     with(HTML){
@@ -230,10 +232,11 @@ $(document).on('click', '.booking-widget .slot', function(e){
         ),
         div({class: 'checkout-body'},
           input({type: 'hidden', name: 'room_id', value: room_id}),
+          input({type: 'hidden', name: 'total', value: '999.99'}),
           table({class: 'checkout-form'},
             tr(td(label('Room')), td({class: 'right'}, room_name)),
-            tr(td(label('Date')), td({class: 'right'}, date)),
-            tr(td(label('Time')), td({class: 'right'}, time)),
+            tr(td(label('Date')), td({class: 'right'}, formatHeaderDate(date))),
+            tr(td(label('Time')), td({class: 'right'}, formatTime(time))),
             horizontal_rule,
             tr(
               td(label('Tickets')),
@@ -266,6 +269,7 @@ $(document).on('click', '.booking-widget .slot', function(e){
           )
         ),
         div({class: 'complete-purchase'},
+          span({class: 'loading-indicator'}, i({class: 'fa fa-spinner fa-spin'}), ' Processing ...'),
           a({class: 'checkout-button'}, 'Complete Purchase'))
       ));
     }
@@ -298,7 +302,9 @@ $(document).on('change', '.booking-widget [name="select-ticket-count"]', functio
 
 $(document).on('click', '.checkout-panel .checkout-button', function(e){
   e.preventDefault();
+  var button = $(this);
   var form = $(this).closest('.checkout-panel');
+  var loading = form.find('.loading-indicator');
   var field = function(name){ return form.find('[name="'+name+'"]').val(); };
   var ticket_count = parseInt(field('ticket_count'));
   var data = {
@@ -312,9 +318,26 @@ $(document).on('click', '.checkout-panel .checkout-button', function(e){
     card_number: field('card_number'),
     card_cvv: field('card_cvv'),
     card_month: field('card_month'),
-    card_year: field('card_year')
+    card_year: field('card_year'),
+    total: field('total')
   };
-  console.log(data);
+  $.ajax({
+    method: 'post',
+    url: 'https://booking.escapemyroom.com/api/booking',
+    data: data,
+    success: function(response){
+      //loading.hide();
+      //form.show();
+      console.log(response);
+    },
+    error: function(xhr){
+      console.log(xhr);
+    }
+  });
+
+  button.hide();
+  loading.show();
+
 });
 
 
