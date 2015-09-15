@@ -37,12 +37,21 @@ function summonModalPanel(gui){
   var panel = $('<div class="modal-panel"></div>');
   modalStack.push(overlay);
   modalStack.push(panel);
-  if(contentW > screenW || contentH > screenH){
+  if(contentW > screenW){
     panel.css('width', screenW);
     panel.css('height', screenH);
     panel.css('left', 0);
     panel.css('top', 0);
     panel.append(gui('large', screenW, screenH));
+  }
+  else if(contentH > screenH){
+    panel.css('width', contentW);
+    panel.css('height', screenH-1);
+    panel.css('left', Math.floor(screenW/2 - contentW/2));
+    panel.css('top', 0);
+    panel.css('overflow-y', 'scroll');
+    panel.css('overflow-x', 'hidden');
+    panel.append(firstTry);
   }
   else{
     panel.css('width', contentW);
