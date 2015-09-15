@@ -11,6 +11,13 @@ function computeDynamicColumnCount(width){
   return Math.floor(width / targetColumnWidth);
 }
 
+var monthOptions = range(1, 12).map(function(n){
+  return {
+    value: n,
+    label: monthNames[n-1]
+  };
+});
+
 /*
 function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon){
   with(HTML){
@@ -63,7 +70,6 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
   var listHeight = height - (staticTitleHeight + staticFiltersHeight + staticHeadersHeight + 10);
 
   with(HTML){
-
     return element(
       div({class: 'booking-widget'},
         div({class: 'title'},
@@ -72,7 +78,7 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
         ),
         div({class: 'filter-section'},
           div(
-            span(roomSelect(room, rooms)),
+            span(roomSelect(room, rooms||[])),
             span(label('Tickets'), ' ', ticketSelect(ticketCount))
           )
         ),
@@ -102,7 +108,12 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
                     if(slots.length > 0){
                       contents = slots.map(function(slot){
                         return div(
-                          {class: 'result slot '+roomColor(slot.room), 'data-id': slot.id},
+                          {
+                            class: 'result slot '+roomColor(slot.room),
+                            'data-room-id': slot.id,
+                            'data-room-name': slot.room,
+                            'data-remaining-tickets': slot.remaining
+                          },
                           formatSlot(slot)
                         )
                       });
@@ -190,28 +201,72 @@ $(window).on('resize', function(e){
 
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
-  /*
-pop up a dialog for the user to fill out their information:
-room (readonly)
-number of tickets (pre-filled, but you can modify)
-first name
-last name
-email
-phone
-coupon code
-cc number
-cc cvc
-cc expr month
-cc expr year
-  */
+  var room_id = $(this).attr('data-room-id');
+  var room_name = $(this).attr('data-room-name');
+  var desired_ticket_count = $('[name="select-ticket-count"]').val();
+  var remaining_tickets = $(this).attr('data-remaining-tickets');
+  var date = $(this).attr('data-date');
+  var time = $(this).attr('data-time');
   summonModalPanel(function(mode, w, h){
     with(HTML){
-      return element(div({class: 'checkout-panel', style:mode=='small'?'width: 700px':''},
+      function row(lab, name, value, readonly){
+        with(HTML){
+          var attrs = {name: name, value: value||''};
+          if(readonly) attrs.readonly = 'readonly';
+          return tr(td(label(lab)), td({class: 'right'}, input(attrs)));
+        }
+      }
+
+      var horizontal_rule = [
+        tr({class: 'space-row'}, td(), td()),
+        tr({class: 'rule-row'}, td(), td()),
+        tr({class: 'space-row'}, td(), td()),
+      ];
+
+      return element(div({class: 'checkout-panel', style:mode=='small'?'width: 350px':''},
         div({class: 'title'},
           h1({class: 'inline-block'}, "CHECKOUT"),
           mode=='large'?a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'})):''
         ),
-        div("A B C D E")
+        div({class: 'checkout-body'},
+          input({type: 'hidden', name: 'room_id', value: room_id}),
+          table({class: 'checkout-form'},
+            tr(td(label('Room')), td({class: 'right'}, room_name)),
+            tr(td(label('Date')), td({class: 'right'}, date)),
+            tr(td(label('Time')), td({class: 'right'}, time)),
+            horizontal_rule,
+            tr(
+              td(label('Tickets')),
+              td({class: 'right'}, selectWithConfig({
+                selected: desired_ticket_count,
+                options: range(1, remaining_tickets).map(function(n){ return {value: n, label: n}; }),
+                attributes: {name: 'ticket_count'}
+              }))
+            ),
+            row('First Name', 'first_name'),
+            row('Last Name', 'last_name'),
+            row('Email', 'email'),
+            row('Phone', 'phone'),
+            row('Coupon Code', 'coupon_code'),
+            row('Card Number', 'card_number'),
+            row('Card CVV', 'card_cvv'),
+            tr(
+              td(label('Card Expiration')),
+              td({class: 'right'},
+                selectWithConfig({
+                  placeholder: 'Select Month',
+                  attributes: {name: 'card_month'},
+                  options: monthOptions
+                }),' ',
+                input({class: 'narrow', name: 'card_year', placeholder: 'YYYY'})
+              )
+            ),
+            horizontal_rule,
+            tr(td('TOTAL'), td({class: 'right'}, '$999.99'))
+          )
+        ),
+        div({class: 'complete-purchase'},
+          a({class: 'checkout-button'}, 'Complete Purchase'))
       ));
     }
   });
@@ -239,6 +294,27 @@ $(document).on('change', '.booking-widget [name="select-ticket-count"]', functio
     state.ticketCount = parseInt(n);
   }
   reloadBookingUI();
+});
+
+$(document).on('click', '.checkout-panel .checkout-button', function(e){
+  e.preventDefault();
+  var form = $(this).closest('.checkout-panel');
+  var field = function(name){ return form.find('[name="'+name+'"]').val(); };
+  var ticket_count = parseInt(field('ticket_count'));
+  var data = {
+    room_id: field('room_id'),
+    ticket_count: ticket_count,
+    first_name: field('first_name'),
+    last_name: field('last_name'),
+    email: field('email'),
+    phone: field('phone'),
+    coupon_code: field('coupon_code'),
+    card_number: field('card_number'),
+    card_cvv: field('card_cvv'),
+    card_month: field('card_month'),
+    card_year: field('card_year')
+  };
+  console.log(data);
 });
 
 
@@ -311,37 +387,35 @@ function reloadBookingUI(){
   var columns = computeDynamicColumnCount(width);
   var tickets = state.ticketCount;
   var room = state.room;
-  withRooms(function(rooms){
-    withAvailabilities(baseDate, dateAdd(baseDate, columns), {
-      now: function(availabilities){
-        reloadMainModalPanel(function(mode, w, h){
-          return bookingWidget(w, h, room, tickets, baseDate, rooms, availabilities);
+  withAvailabilities(baseDate, dateAdd(baseDate, columns), {
+    now: function(rooms, availabilities){
+      reloadMainModalPanel(function(mode, w, h){
+        return bookingWidget(w, h, room, tickets, baseDate, rooms, availabilities);
+      });
+    },
+    fetching: function(){
+      reloadMainModalPanel(function(mode, panelW, panelH){
+        return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, {}, 'loading');
+      });
+    },
+    fetchDone: function(){
+      reloadBookingUI();
+    },
+    error: function(message){
+      state.baseDate = dateToday();
+      state.tickets = 1;
+      clearData();
+      dismissAllModals();
+      console.log(message);
+      with(HTML){
+        summonModalPanel(function(mode, w, h){
+          return element(div({class: 'booking-widget error-popup', style: mode=='small'?'width:500px':''},
+            p(encode(message)),
+            div(a({class: 'modal-dismiss'}, 'OK'))
+          ));
         });
-      },
-      fetching: function(){
-        reloadMainModalPanel(function(mode, panelW, panelH){
-          return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, {}, 'loading');
-        });
-      },
-      fetchDone: function(){
-        reloadBookingUI();
-      },
-      error: function(message){
-        state.baseDate = dateToday();
-        state.tickets = 1;
-        clearData();
-        dismissAllModals();
-        console.log(message);
-        with(HTML){
-          summonModalPanel(function(mode, w, h){
-            return element(div({class: 'booking-widget error-popup', style: mode=='small'?'width:500px':''},
-              p(encode(message)),
-              div(a({class: 'modal-dismiss'}, 'OK'))
-            ));
-          });
-        }
       }
-    });
+    }
   });
 }
 

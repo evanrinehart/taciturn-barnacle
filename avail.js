@@ -32,55 +32,39 @@ function withRooms(callback){
 }
 
 function fetchData(startDate, endDate, okCb, errorCb){
-  setTimeout(function(){
-    var results = {
-      '2015-09-15': [
-        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
-        {time: '22:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
-        {time: '23:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'}
-      ],
-      '2015-09-16': [
-        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
-      ],
-      '2015-09-17': [
-        {time: '21:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
-        {time: '22:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
-        {time: '18:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
-        {time: '18:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
-        {time: '19:00:00', remaining: 6, room: 'Mardi Gras Study', id: 'ABCD1'},
-        {time: '19:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
-        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
-        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'}
-      ],
-      '2015-09-18': [
-        {time: '20:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
-        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'}
-      ],
-      '2015-09-19': [
-        {time: '21:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'},
-        {time: '22:00:00', remaining: 6, room: 'Jazz Music Parlor', id: 'ABCD2'}
-      ]
-    };
-
-    for(var d=startDate; d<=endDate; d=dateAdd(d,1)){
-      if(!results.hasOwnProperty(encodeDate(d))){
-        results[encodeDate(d)] = [];
-      }
-    }
-
-    for(var k in results){
-      db[k] = results[k];
-    }
-
-    for(var d=startDate; d<=endDate; d=dateAdd(d,1)){
-      if(!results.hasOwnProperty(encodeDate(d))){
-        errorCb('Sorry, there was a problem fetching availability data. Please try again later.');
+  var crashMsg = 'Sorry, there was a problem fetching availability data. Please try again later.';
+  $.ajax({
+    method: 'get',
+    url: "https://booking.escapemyroom.com/api/availability",
+    data: {
+      start_date: encodeDate(startDate),
+      end_date: encodeDate(endDate)
+    },
+    success: function(results){
+      if(jstype(results) != 'Object'){
+        errorCb(crashMsg);
         return;
       }
-    }
 
-    okCb(results);
-  }, 700);
+      for(var k in results){
+        db[k] = results[k];
+      }
+
+      for(var d=startDate; d<=endDate; d=dateAdd(d,1)){
+        if(!results.hasOwnProperty(encodeDate(d))){
+          console.log('result is missing one of the days requested');
+          errorCb(crashMsg);
+          return;
+        }
+      }
+
+      okCb(db);
+    },
+    error: function(xhr){
+      console.log(xhr);
+      errorCb(crashMsg);
+    }
+  });
 }
 
 function withAvailabilities(startDate, endDate, callbacks){
@@ -93,11 +77,21 @@ function withAvailabilities(startDate, endDate, callbacks){
     }
   }
 
-  if(needFetch){
+  if(needFetch || rooms==null){
     callbacks.fetching();
-    fetchData(dateAdd(startDate,-10), dateAdd(endDate,10), callbacks.fetchDone, callbacks.error);
   }
-  else{
-    callbacks.now(db);
-  }
+
+  withRooms(function(rooms){
+    if(needFetch){
+      fetchData(
+        dateAdd(startDate,-10),
+        dateAdd(endDate,10),
+        function(results){ callbacks.fetchDone(rooms, results); },
+        callbacks.error
+      );
+    }
+    else{
+      callbacks.now(rooms, db);
+    }
+  });
 }

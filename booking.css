@@ -275,3 +275,54 @@ body {
 .booking-widget .bg-color4 { background-color: #FF82AB; }
 .booking-widget .bg-color5 { background-color: #FFDAB9; }
 .booking-widget .bg-color6 { background-color: #FFBBFF; }
+
+.checkout-panel {
+  font-size: 18px;
+  border: 1px solid lime;
+}
+
+.checkout-panel .checkout-body {
+  padding: 16px;
+}
+
+.checkout-panel .checkout-form {
+  width: 100%;
+  border-spacing: 0;
+}
+
+.checkout-panel .checkout-form .rule-row td {
+  border-bottom: 1px solid gray;
+}
+
+.checkout-panel .checkout-form .space-row td {
+  padding-top: 5px;
+}
+
+.checkout-panel .right {
+  text-align: right;
+}
+
+.checkout-panel .narrow {
+  width: 35px;
+}
+
+.checkout-panel .complete-purchase {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.checkout-panel .complete-purchase a {
+  cursor: pointer;
+  border: 1px solid white;
+  padding: 4px 12px;
+}
+
+.checkout-panel .complete-purchase a:hover {
+  color: lime;
+  border-color: lime;
+}
+
+.checkout-panel .complete-purchase a:active {
+  color: black;
+  background-color: white;
+}

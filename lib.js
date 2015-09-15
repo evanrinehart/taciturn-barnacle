@@ -1,3 +1,14 @@
+function jstype(x){
+  var raw = ({}).toString.call(x)
+  var results = raw.match(/\[object (\w+)\]/)
+  if(results){
+    return results[1];
+  }
+  else {
+    throw new Error("unknown jstype ("+raw+")");
+  };
+}
+
 function range(a, b){
   var r = [];
   var i;

@@ -29,6 +29,9 @@ var HTML;
         case 'Number':
         case 'Date':
           v = obj[k].toString(); break;
+        case 'Undefined':
+          console.error("undefined attribute in ", obj);
+          continue;
         default:
           console.log(obj[k]);
           throw new Error('bad attr');
