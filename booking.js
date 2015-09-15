@@ -326,9 +326,30 @@ $(document).on('click', '.checkout-panel .checkout-button', function(e){
     url: 'https://booking.escapemyroom.com/api/booking',
     data: data,
     success: function(response){
+      if(response.ok === true){
+        summonModalPanel(function(mode, w, h){
+          with(HTML){
+            return element(
+              div({class: 'checkout-panel'},
+                div({class: 'title'},
+                  h1({class: 'inline-block'}, "COMPLETE")
+                ),
+                div("Checkout Complete! Check your email for tickets and the receipt."),
+                div(a({class: 'dialog-button dismiss-all'}, "OK"))
+              )
+            );
+          } 
+        });
+      }
+      else {
+        summonModalPanel(function(mode, w, h){
+          with(HTML){
+            return element(div("There was a problem!"))
+          }
+        });
+      }
       //loading.hide();
       //form.show();
-      console.log(response);
     },
     error: function(xhr){
       console.log(xhr);
