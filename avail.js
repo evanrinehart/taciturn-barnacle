@@ -96,11 +96,15 @@ function withAvailabilities(startDate, endDate, callbacks){
   });
 }
 
-function fetchPrice(ticketCount, callbacks){
+function fetchPrice(room_id, ticket_count, callbacks){
   $.ajax({
     url: "https://booking.escapemyroom.com/api/pricing",
-    data: {ticket_count: ticketCount},
+    data: {
+      room_id: room_id,
+      ticket_count: ticket_count
+    },
     success: function(data){
+console.log(data);
       if(data.ok){
         callbacks.ok(data.ok);
       }

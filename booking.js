@@ -118,8 +118,8 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
                   table({class: 'inner-table'}, tr(range(0, columnCount-1).map(function(i){
                     var d = dateAdd(baseDate, i);
                     var slots = availabilities[encodeDate(d)].filter(function(av){
-                      if(room && av.id != room) return false;
-                      if(av.remaining < ticketCount) return false;
+                      if(room && av.room_id != room) return false;
+                      if(av.tickets_remaining < ticketCount) return false;
                       return true;
                     });
                     var contents;
@@ -127,12 +127,12 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
                       contents = slots.map(function(slot){
                         return div(
                           {
-                            class: 'result slot '+roomColor(slot.room),
-                            'data-room-id': slot.id,
-                            'data-room-name': slot.room,
+                            class: 'result slot '+roomColor(slot.room_name),
+                            'data-room-id': slot.room_id,
+                            'data-room-name': slot.room_name,
                             'data-date': encodeDate(d),
                             'data-time': slot.time,
-                            'data-remaining-tickets': slot.remaining
+                            'data-remaining-tickets': slot.tickets_remaining
                           },
                           formatSlot(slot)
                         )
@@ -249,11 +249,11 @@ function formatDateForButton(d){
 
 function formatSlot(slot){
   var span = HTML.span;
-  var color = roomColor(slot.room);
+  var color = roomColor(slot.room_name);
   return [
     span({class: 'time'}, formatTime(slot.time)), '<br>',
-    slot.room,' ',
-    span({class: 'remaining bg-'+color}, slot.remaining, ' tickets')
+    slot.room_name,' ',
+    span({class: 'remaining bg-'+color}, slot.tickets_remaining, ' tickets')
   ];
 }
 
@@ -292,7 +292,8 @@ $(document).on('click', '.booking-widget .slot', function(e){
   var desired_ticket_count = $('[name="select-ticket-count"]').val();
   var ele = $(this);
   function data(name){ return ele.attr('data-'+name); }
-  fetchPrice(desired_ticket_count, {
+  var room_id = data('room-id');
+  fetchPrice(room_id, desired_ticket_count, {
     ok: function(price){
       summonModalPanel(checkoutPanel({
         room_id: data('room-id'),
@@ -504,8 +505,9 @@ $(document).on('change', 'select[name="ticket_count"]', function(){
   var form = $(this).closest('.checkout-panel');
   var loading = form.find('.loading-indicator');
   var button = form.find('.checkout-button');
+  var room_id = form.find('[name="room_id"]').val();
   var ticket_count = $(this).val();
-  fetchPrice(ticket_count, {
+  fetchPrice(room_id, ticket_count, {
     ok: function(price){
       loading.hide();
       button.show();
