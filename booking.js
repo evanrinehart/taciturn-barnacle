@@ -283,9 +283,11 @@ $(document).on('click', '.booking-widget a.right-arrow', function(e){
   reloadBookingUI();
 });
 
+/*
 $(window).on('resize', function(e){
   dismissAllModals();
 });
+*/
 
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
