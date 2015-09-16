@@ -95,3 +95,21 @@ function withAvailabilities(startDate, endDate, callbacks){
     }
   });
 }
+
+function fetchPrice(ticketCount, callbacks){
+  $.ajax({
+    url: "https://booking.escapemyroom.com/api/pricing",
+    data: {ticket_count: ticketCount},
+    success: function(data){
+      if(data.ok){
+        callbacks.ok(data.ok);
+      }
+      else{
+        callbacks.error();
+      }
+    },
+    error: function(xhr){
+      callbacks.error();
+    }
+  });
+}

@@ -242,27 +242,6 @@ body {
   color: gray;
 }
 
-.booking-widget.error-popup {
-  text-align: center;
-}
-
-.booking-widget.error-popup div {
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-.booking-widget.error-popup a {
-  font-size: 24px;
-  cursor: pointer;
-  border: 1px solid gray;
-  padding: 10px;
-}
-
-.booking-widget.error-popup a:active {
-  color: black;
-  background-color: white;
-}
-
 .booking-widget .mardi-gras-study { color: #C1FFC1; }
 .booking-widget .jazz-music-parlor { color: #97FFFF; }
 .booking-widget .color3 { color: #FF3030; }

@@ -1,6 +1,8 @@
 var maxTicketCount = 7;
 var targetColumnWidth = 160;
 
+var priceError = 'There was a problem fetching pricing data. Please try again later.'
+
 var state = {
   baseDate: new Date(2015, 8, 17),
   room: undefined,
@@ -31,6 +33,22 @@ function filterWidget(fieldLabel, valueLabel, containerClass, buttonClass, icon)
   }
 }
 */
+
+function dialog(header, message, onClose){
+  return function(mode, w, h){
+    with(HTML){
+      var e = element(
+        div({class: 'modal-dialog', style: mode=='small'?'width: 400px':''},
+          div({class: 'title'}, h1({class: 'inline-block'}, header)),
+          div({class: 'dialog-body'}, message),
+          div({class: 'dialog-footer'}, a({class: 'dialog-dismiss'}, 'OK'))
+        )
+      );
+      e.onClose = onClose;
+      return e;
+    }
+  };
+}
 
 function roomSelect(roomId, rooms){
   with(HTML){
@@ -135,6 +153,74 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
   }
 }
 
+function checkoutPanel(data){
+  return function(mode, w, h){
+    with(HTML){
+      function row(lab, name, value, readonly){
+        with(HTML){
+          var attrs = {name: name, value: value||''};
+          if(readonly) attrs.readonly = 'readonly';
+          return tr(td(label(lab)), td({class: 'right'}, input(attrs)));
+        }
+      }
+
+      var horizontal_rule = [
+        tr({class: 'space-row'}, td(), td()),
+        tr({class: 'rule-row'}, td(), td()),
+        tr({class: 'space-row'}, td(), td()),
+      ];
+
+      return element(div({class: 'checkout-panel', style:mode=='small'?'width: 350px':''},
+        div({class: 'title'},
+          h1({class: 'inline-block'}, "CHECKOUT"),
+          mode=='large'?a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'})):''
+        ),
+        div({class: 'checkout-body'},
+          input({type: 'hidden', name: 'room_id', value: data.room_id}),
+          input({type: 'hidden', name: 'total', value: data.price}),
+          table({class: 'checkout-form'},
+            tr(td(label('Room')), td({class: 'right'}, data.room_name)),
+            tr(td(label('Date')), td({class: 'right'}, formatHeaderDate(data.date))),
+            tr(td(label('Time')), td({class: 'right'}, formatTime(data.time))),
+            horizontal_rule,
+            tr(
+              td(label('Tickets')),
+              td({class: 'right'}, selectWithConfig({
+                selected: data.desired_ticket_count,
+                options: range(1, data.remaining_tickets).map(function(n){ return {value: n, label: n}; }),
+                attributes: {name: 'ticket_count'}
+              }))
+            ),
+            row('First Name', 'first_name'),
+            row('Last Name', 'last_name'),
+            row('Email', 'email'),
+            row('Phone', 'phone'),
+            row('Coupon Code', 'coupon_code'),
+            row('Card Number', 'card_number'),
+            row('Card CVV', 'card_cvv'),
+            tr(
+              td(label('Card Expiration')),
+              td({class: 'right'},
+                selectWithConfig({
+                  placeholder: 'Select Month',
+                  attributes: {name: 'card_month'},
+                  options: monthOptions
+                }),' ',
+                input({class: 'narrow', name: 'card_year', placeholder: 'YYYY'})
+              )
+            ),
+            horizontal_rule,
+            tr(td('TOTAL'), td({class: 'right'}, span({class: 'total'}, '$'+data.price.toFixed(2))))
+          )
+        ),
+        div({class: 'complete-purchase'},
+          span({class: 'loading-indicator'}, i({class: 'fa fa-spinner fa-spin'}), ' Processing ...'),
+          a({class: 'checkout-button'}, 'Complete Purchase'))
+      ));
+    }
+  };
+}
+
 function roomColor(room){
   switch(room){
     case 'Mardi Gras Study': return 'mardi-gras-study';
@@ -203,75 +289,23 @@ $(window).on('resize', function(e){
 
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
-  var room_id = $(this).attr('data-room-id');
-  var room_name = $(this).attr('data-room-name');
   var desired_ticket_count = $('[name="select-ticket-count"]').val();
-  var remaining_tickets = $(this).attr('data-remaining-tickets');
-  var date = readDate($(this).attr('data-date'));
-  var time = $(this).attr('data-time');
-  summonModalPanel(function(mode, w, h){
-    with(HTML){
-      function row(lab, name, value, readonly){
-        with(HTML){
-          var attrs = {name: name, value: value||''};
-          if(readonly) attrs.readonly = 'readonly';
-          return tr(td(label(lab)), td({class: 'right'}, input(attrs)));
-        }
-      }
-
-      var horizontal_rule = [
-        tr({class: 'space-row'}, td(), td()),
-        tr({class: 'rule-row'}, td(), td()),
-        tr({class: 'space-row'}, td(), td()),
-      ];
-
-      return element(div({class: 'checkout-panel', style:mode=='small'?'width: 350px':''},
-        div({class: 'title'},
-          h1({class: 'inline-block'}, "CHECKOUT"),
-          mode=='large'?a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'})):''
-        ),
-        div({class: 'checkout-body'},
-          input({type: 'hidden', name: 'room_id', value: room_id}),
-          input({type: 'hidden', name: 'total', value: '999.99'}),
-          table({class: 'checkout-form'},
-            tr(td(label('Room')), td({class: 'right'}, room_name)),
-            tr(td(label('Date')), td({class: 'right'}, formatHeaderDate(date))),
-            tr(td(label('Time')), td({class: 'right'}, formatTime(time))),
-            horizontal_rule,
-            tr(
-              td(label('Tickets')),
-              td({class: 'right'}, selectWithConfig({
-                selected: desired_ticket_count,
-                options: range(1, remaining_tickets).map(function(n){ return {value: n, label: n}; }),
-                attributes: {name: 'ticket_count'}
-              }))
-            ),
-            row('First Name', 'first_name'),
-            row('Last Name', 'last_name'),
-            row('Email', 'email'),
-            row('Phone', 'phone'),
-            row('Coupon Code', 'coupon_code'),
-            row('Card Number', 'card_number'),
-            row('Card CVV', 'card_cvv'),
-            tr(
-              td(label('Card Expiration')),
-              td({class: 'right'},
-                selectWithConfig({
-                  placeholder: 'Select Month',
-                  attributes: {name: 'card_month'},
-                  options: monthOptions
-                }),' ',
-                input({class: 'narrow', name: 'card_year', placeholder: 'YYYY'})
-              )
-            ),
-            horizontal_rule,
-            tr(td('TOTAL'), td({class: 'right'}, '$999.99'))
-          )
-        ),
-        div({class: 'complete-purchase'},
-          span({class: 'loading-indicator'}, i({class: 'fa fa-spinner fa-spin'}), ' Processing ...'),
-          a({class: 'checkout-button'}, 'Complete Purchase'))
-      ));
+  var ele = $(this);
+  function data(name){ return ele.attr('data-'+name); }
+  fetchPrice(desired_ticket_count, {
+    ok: function(price){
+      summonModalPanel(checkoutPanel({
+        room_id: data('room-id'),
+        room_name: data('room-name'),
+        desired_ticket_count: desired_ticket_count,
+        remaining_tickets: data('remaining-tickets'),
+        date: readDate(data('date')),
+        time: data('time'),
+        price: price
+      }));
+    },
+    error: function(){
+      summonModalPanel(dialog('ERROR', priceError));
     }
   });
 });
@@ -292,12 +326,16 @@ $(document).on('change', '.booking-widget [name="select-ticket-count"]', functio
   e.preventDefault();
   var n = $(this).val();
   if(n == 'too-many'){
-    alert("TOO MANY (call for more information!)");
+    $(this).val(state.ticketCount);
+    summonModalPanel(dialog(
+      '8+ TICKETS',
+      'Please call for more information on booking 8 or more tickets at a time.'
+    ));
   }
   else{
     state.ticketCount = parseInt(n);
+    reloadBookingUI();
   }
-  reloadBookingUI();
 });
 
 $(document).on('click', '.checkout-panel .checkout-button', function(e){
@@ -447,12 +485,7 @@ function reloadBookingUI(){
       dismissAllModals();
       console.log(message);
       with(HTML){
-        summonModalPanel(function(mode, w, h){
-          return element(div({class: 'booking-widget error-popup', style: mode=='small'?'width:500px':''},
-            p(encode(message)),
-            div(a({class: 'modal-dismiss'}, 'OK'))
-          ));
-        });
+        summonModalPanel(dialog('ERROR', message));
       }
     }
   });
@@ -460,25 +493,30 @@ function reloadBookingUI(){
 
 
 
-function dialog(header, message, onClose){
-  return function(mode, w, h){
-    with(HTML){
-      var e = element(
-        div({class: 'modal-dialog', style: mode=='small'?'width: 350px':''},
-          div({class: 'title'}, h1({class: 'inline-block'}, header)),
-          div({class: 'dialog-body'}, message),
-          div({class: 'dialog-footer'}, a({class: 'dialog-dismiss'}, 'OK'))
-        )
-      );
-      e.onClose = onClose;
-      return e;
-    }
-  };
-}
-
 $(document).on('click', '.dialog-dismiss', function(e){
   e.preventDefault();
   var onClose = $(this).closest('.modal-dialog')[0].onClose;
   dismissModalPanel();
-  onClose();
+  if(onClose) onClose();
+});
+
+$(document).on('change', 'select[name="ticket_count"]', function(){
+  var form = $(this).closest('.checkout-panel');
+  var loading = form.find('.loading-indicator');
+  var button = form.find('.checkout-button');
+  var ticket_count = $(this).val();
+  fetchPrice(ticket_count, {
+    ok: function(price){
+      loading.hide();
+      button.show();
+      form.find('span.total').text('$'+price.toFixed(2));
+    },
+    error: function(){
+      loading.hide();
+      button.show();
+      summonModalPanel(dialog('ERROR', priceError));
+    }
+  });
+  loading.show();
+  button.hide();
 });
