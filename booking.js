@@ -327,26 +327,21 @@ $(document).on('click', '.checkout-panel .checkout-button', function(e){
     data: data,
     success: function(response){
       if(response.ok === true){
-        summonModalPanel(function(mode, w, h){
-          with(HTML){
-            return element(
-              div({class: 'checkout-panel'},
-                div({class: 'title'},
-                  h1({class: 'inline-block'}, "COMPLETE")
-                ),
-                div("Checkout Complete! Check your email for tickets and the receipt."),
-                div(a({class: 'dialog-button dismiss-all'}, "OK"))
-              )
-            );
-          } 
-        });
+        summonModalPanel(dialog(
+          'COMPLETE',
+          "Checkout Complete! Check your email for tickets and the receipt.",
+          function(){ dismissAllModals(); }
+        ));
       }
       else {
-        summonModalPanel(function(mode, w, h){
-          with(HTML){
-            return element(div("There was a problem!"))
+        summonModalPanel(dialog(
+          'ERROR',
+          'Sorry, a problem occurred with your purchase. Try again later.',
+          function(){ 
+            button.show();
+            loading.hide();
           }
-        });
+        ));
       }
       //loading.hide();
       //form.show();
@@ -463,3 +458,27 @@ function reloadBookingUI(){
   });
 }
 
+
+
+function dialog(header, message, onClose){
+  return function(mode, w, h){
+    with(HTML){
+      var e = element(
+        div({class: 'modal-dialog', style: mode=='small'?'width: 350px':''},
+          div({class: 'title'}, h1({class: 'inline-block'}, header)),
+          div({class: 'dialog-body'}, message),
+          div({class: 'dialog-footer'}, a({class: 'dialog-dismiss'}, 'OK'))
+        )
+      );
+      e.onClose = onClose;
+      return e;
+    }
+  };
+}
+
+$(document).on('click', '.dialog-dismiss', function(e){
+  e.preventDefault();
+  var onClose = $(this).closest('.modal-dialog')[0].onClose;
+  dismissModalPanel();
+  onClose();
+});

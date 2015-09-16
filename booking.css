@@ -278,7 +278,6 @@ body {
 
 .checkout-panel {
   font-size: 18px;
-  border: 1px solid lime;
 }
 
 .checkout-panel .checkout-body {
@@ -306,6 +305,10 @@ body {
   width: 35px;
 }
 
+.checkout-panel input {
+  width: 135px;
+}
+
 .checkout-panel .complete-purchase {
   text-align: center;
   padding-bottom: 20px;
@@ -330,4 +333,24 @@ body {
 .checkout-panel .loading-indicator {
   font-size: 18px;
   display: none;
+}
+
+.custom-modal .dialog-body {
+  padding: 16px;
+}
+
+.custom-modal .dialog-footer {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.custom-modal .dialog-dismiss {
+  border: 1px solid gray;
+  padding: 4px 16px;
+  cursor: pointer;
+}
+
+.custom-modal .dialog-dismiss:active {
+  color: black;
+  background-color: white;
 }

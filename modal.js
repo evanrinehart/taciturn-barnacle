@@ -7,7 +7,7 @@ function summonFullScreenModalPanel(gui){
   var screenW = $(document).width(); 
   var screenH = $(document).height(); 
   var overlay = $('<div class="modal-overlay"></div>');
-  var panel = $('<div class="modal-panel"></div>');
+  var panel = $('<div class="custom-modal modal-panel"></div>');
   modalStack.push(overlay);
   modalStack.push(panel);
   panel.css('width', screenW);
@@ -27,14 +27,14 @@ function summonModalPanel(gui){
   var screenW = $(document).width(); 
   var screenH = $(document).height(); 
   var firstTry = gui('small');
-  var probe = $('<div class="modal-panel modal-probe" style="visibility: hidden"></div>');
+  var probe = $('<div class="custom-modal modal-panel modal-probe" style="visibility: hidden"></div>');
   $('body').append(probe);
   probe.append(firstTry);
   var contentW = probe.width();
   var contentH = probe.height();
   probe.remove();
   var overlay = $('<div class="modal-overlay"></div>');
-  var panel = $('<div class="modal-panel"></div>');
+  var panel = $('<div class="custom-modal modal-panel"></div>');
   modalStack.push(overlay);
   modalStack.push(panel);
   if(contentW > screenW){
@@ -55,7 +55,7 @@ function summonModalPanel(gui){
   }
   else{
     panel.css('width', contentW);
-    panel.css('height', contentH);
+    //panel.css('height', contentH);
     panel.css('left', Math.floor(screenW/2 - contentW/2));
     panel.css('top', Math.floor(screenH/2 - contentH/2));
     panel.append(firstTry);
