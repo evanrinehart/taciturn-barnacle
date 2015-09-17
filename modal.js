@@ -4,8 +4,8 @@ var modalStack = [];
 var level = 10;
 
 function summonFullScreenModalPanel(gui){
-  var screenW = $(document).width(); 
-  var screenH = $(document).height(); 
+  var screenW = $(window).width(); 
+  var screenH = $(window).height(); 
   var overlay = $('<div class="modal-overlay"></div>');
   var panel = $('<div class="custom-modal modal-panel"></div>');
   modalStack.push(overlay);
@@ -24,8 +24,8 @@ function summonFullScreenModalPanel(gui){
 }
 
 function summonModalPanel(gui){
-  var screenW = $(document).width(); 
-  var screenH = $(document).height(); 
+  var screenW = $(window).width(); 
+  var screenH = $(window).height(); 
   var firstTry = gui('small');
   var probe = $('<div class="custom-modal modal-panel modal-probe" style="visibility: hidden"></div>');
   $('body').append(probe);

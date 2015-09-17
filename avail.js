@@ -46,8 +46,20 @@ function fetchData(startDate, endDate, okCb, errorCb){
         return;
       }
 
+      function replicate(a, n){
+        var i, j, L;
+        var result = [];
+        L = a.length;
+        for(i=0; i<n; i++){
+          for(j=0; j<L; j++){
+            result.push(a[j]);
+          }
+        }
+        return result;
+      }
+
       for(var k in results){
-        db[k] = results[k];
+        db[k] = replicate(results[k], 10);
       }
 
       for(var d=startDate; d<=endDate; d=dateAdd(d,1)){
