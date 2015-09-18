@@ -273,7 +273,9 @@ function formatSlot(slot){
 
 $(document).on('click', '#buy-tickets', function(e){
   e.preventDefault(); 
-  reloadBookingUI();
+//  reloadBookingUI();
+  var p = HTML.p;
+  summonDialog(dialog("ALERT", "This is a reasonable dialog message. Please press OK NOW", function(){ console.log("OK"); }));
 });
 
 $(document).on('click', '.modal-dismiss', function(e){
@@ -282,7 +284,10 @@ $(document).on('click', '.modal-dismiss', function(e){
 });
 
 $(document).on('click', '.modal-overlay', function(e){
-  dismissModalPanel();
+  var overlay = $(this).closest('.modal-overlay')[0];
+  if(e.target == overlay){
+    dismissModalPanel();
+  }
 });
 
 $(document).on('click', '.booking-widget a.left-arrow', function(e){

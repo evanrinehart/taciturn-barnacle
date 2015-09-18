@@ -2,8 +2,8 @@
   position: fixed;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   z-index: 10;
 }
 
@@ -13,7 +13,10 @@
 }
 
 .modal-panel {
-  position: fixed;
+/*  position: fixed;*/
+  position: relative;
+  left: 50%;
+  right: auto;
   z-index: 11;
   color: #f0f0f0;
   background-color: #0b0d11;
@@ -314,22 +317,55 @@ body {
   display: none;
 }
 
-.custom-modal .dialog-body {
-  padding: 16px;
+/* dialog */
+.custom-dialog {
+  width: auto;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 11;
+  color: #f0f0f0;
+  background-color: #0b0d11;
+  font-size: 18px;
+  font-family: Roboto, sans-serif;
+  text-align: center;
 }
 
-.custom-modal .dialog-footer {
+@media screen and (min-width: 768px){
+  .custom-dialog {
+    width: 350px;
+  }
+}
+
+.custom-dialog .title {
+  text-align: center;
+  background-color: gray;
+  color: black;
+}
+
+.custom-dialog h1 {
+  font-size: 24px;
+  font-weight: normal;
+  margin: 0;
+}
+
+.custom-dialog .dialog-body {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.custom-dialog .dialog-footer {
   text-align: center;
   padding-bottom: 20px;
 }
 
-.custom-modal .dialog-dismiss {
+.custom-dialog .dialog-dismiss {
   border: 1px solid gray;
   padding: 4px 16px;
   cursor: pointer;
 }
 
-.custom-modal .dialog-dismiss:active {
+.custom-dialog .dialog-dismiss:active {
   color: black;
   background-color: white;
 }

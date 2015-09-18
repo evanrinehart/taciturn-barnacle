@@ -3,6 +3,36 @@
 var modalStack = [];
 var level = 10;
 
+function probeHeight(content){
+  var probe = $('<div class="custom-dialog modal-probe" style="visibility: hidden"></div>');
+  probe.append(content);
+  $('body').append(probe);
+  var contentW = probe.width();
+  var contentH = probe.height();
+  probe.remove();
+  return {
+    width: contentW,
+    height: contentH
+  };
+}
+
+function summonDialog(content){
+  var screenH = $(window).height(); 
+  var contentH = probeHeight(content).height;
+  var overlay = $('<div class="modal-overlay"></div>');
+  var panel = $('<div class="custom-dialog"></div>');
+  var offset = contentH > screenH ? 0 : Math.floor(screenH/2 - contentH/2);
+  modalStack.push(overlay);
+  panel.append(content);
+  level++;
+  overlay.css('z-index', level);
+  level++;
+  panel.css('z-index', level);
+  panel.css('margin-top', offset+'px');
+  overlay.append(panel);
+  $('body').append(overlay);
+}
+
 function summonFullScreenModalPanel(gui){
   var screenW = $(window).width(); 
   var screenH = $(window).height(); 
@@ -19,8 +49,9 @@ function summonFullScreenModalPanel(gui){
   overlay.css('z-index', level);
   level++;
   panel.css('z-index', level);
+  overlay.append(panel);
   $('body').append(overlay);
-  $('body').append(panel);
+//  $('body').append(panel);
 }
 
 function summonModalPanel(gui){
@@ -36,7 +67,7 @@ function summonModalPanel(gui){
   var overlay = $('<div class="modal-overlay"></div>');
   var panel = $('<div class="custom-modal modal-panel"></div>');
   modalStack.push(overlay);
-  modalStack.push(panel);
+  //modalStack.push(panel);
   if(contentW > screenW){
     panel.css('width', screenW);
     panel.css('height', screenH);
@@ -62,16 +93,17 @@ function summonModalPanel(gui){
   }
   level++;
   overlay.css('z-index', level);
-  level++;
-  panel.css('z-index', level);
+//  level++;
+//  panel.css('z-index', level);
+  overlay.append(panel);
   $('body').append(overlay);
-  $('body').append(panel);
+//  $('body').append(panel);
 }
 
 function dismissModalPanel(){
-  var panel = modalStack.pop();
+//  var panel = modalStack.pop();
   var overlay = modalStack.pop();
-  panel.remove();
+//  panel.remove();
   overlay.remove();
   level--;
   level--;
