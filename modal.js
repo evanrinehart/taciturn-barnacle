@@ -33,25 +33,20 @@ function summonDialog(content){
   $('body').append(overlay);
 }
 
-function summonFullScreenModalPanel(gui){
+function summonFullScreenModal(gui){
   var screenW = $(window).width(); 
   var screenH = $(window).height(); 
   var overlay = $('<div class="modal-overlay"></div>');
-  var panel = $('<div class="custom-modal modal-panel"></div>');
+  var panel = $('<div class="custom-fullscreen"></div>');
   modalStack.push(overlay);
-  modalStack.push(panel);
-  panel.css('width', screenW);
-  panel.css('height', screenH);
-  panel.css('left', 0);
-  panel.css('top', 0);
-  panel.append(gui('expand', screenW, screenH));
+  panel.append(gui(screenW, screenH));
   level++;
   overlay.css('z-index', level);
   level++;
   panel.css('z-index', level);
+  panel.css('height', screenH+'px');
   overlay.append(panel);
   $('body').append(overlay);
-//  $('body').append(panel);
 }
 
 function summonModalPanel(gui){

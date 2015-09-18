@@ -12,17 +12,14 @@
   background-color: black;
 }
 
-.modal-panel {
-/*  position: fixed;*/
-  position: relative;
-  left: 50%;
-  right: auto;
-  z-index: 11;
+
+/* fullscreen panel */
+.custom-fullscreen {
   color: #f0f0f0;
   background-color: #0b0d11;
 }
 
-.modal-panel .close-button {
+.custom-fullscreen .close-button {
   font-size: 30px;
   float: right;
   margin-top: -4px;
@@ -30,34 +27,32 @@
   cursor: pointer;
 }
 
-.modal-panel .close-button:hover {
+.custom-fullscreen .close-button:hover {
   color: white;
 }
 
-.modal-panel .close-button:active {
+.custom-fullscreen .close-button:active {
   color: black;
 }
 
-.modal-panel .title {
+.custom-fullscreen .title {
   text-align: center;
   background-color: gray;
   color: black;
 }
 
-.modal-panel h1 {
+.custom-fullscreen h1 {
   font-size: 24px;
   font-weight: normal;
   margin: 0;
 }
 
-.modal-panel {
+.custom-fullscreen {
   font-size: 20px;
   font-family: Roboto, sans-serif;
-/*  font-family: sans-serif;*/
   color: #f0f0f0;
   background-color: #0b0d11;
 }
-
 
 .booking-widget .arrow:hover {
   color: white;
@@ -331,7 +326,7 @@ body {
   text-align: center;
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 350px){
   .custom-dialog {
     width: 350px;
   }

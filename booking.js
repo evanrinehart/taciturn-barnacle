@@ -273,9 +273,7 @@ function formatSlot(slot){
 
 $(document).on('click', '#buy-tickets', function(e){
   e.preventDefault(); 
-//  reloadBookingUI();
-  var p = HTML.p;
-  summonDialog(dialog("ALERT", "This is a reasonable dialog message. Please press OK NOW", function(){ console.log("OK"); }));
+  reloadBookingUI();
 });
 
 $(document).on('click', '.modal-dismiss', function(e){
@@ -302,11 +300,17 @@ $(document).on('click', '.booking-widget a.right-arrow', function(e){
   reloadBookingUI();
 });
 
-/*
 $(window).on('resize', function(e){
-  dismissAllModals();
+  var main = $('.booking-widget');
+  if(main.length > 0){
+    var screenW = $(window).width();
+    var screenH = $(window).height();
+    main.parent().css('height', screenH+'px');
+    if(main.find('.loading').length == 0){
+      reloadBookingUI();
+    }
+  }
 });
-*/
 
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
@@ -327,7 +331,7 @@ $(document).on('click', '.booking-widget .slot', function(e){
       }));
     },
     error: function(){
-      summonModalPanel(dialog('ERROR', priceError));
+      summonDialog(dialog('ERROR', priceError));
     }
   });
 });
@@ -349,7 +353,7 @@ $(document).on('change', '.booking-widget [name="select-ticket-count"]', functio
   var n = $(this).val();
   if(n == 'too-many'){
     $(this).val(state.ticketCount);
-    summonModalPanel(dialog(
+    summonDialog(dialog(
       '8+ TICKETS',
       'Please call for more information on booking 8 or more tickets at a time.'
     ));
@@ -387,14 +391,14 @@ $(document).on('click', '.checkout-panel .checkout-button', function(e){
     data: data,
     success: function(response){
       if(response.ok === true){
-        summonModalPanel(dialog(
+        summonDialog(dialog(
           'COMPLETE',
           "Checkout Complete! Check your email for tickets and the receipt.",
           function(){ dismissAllModals(); }
         ));
       }
       else {
-        summonModalPanel(dialog(
+        summonDialog(dialog(
           'ERROR',
           'Sorry, a problem occurred with your purchase. Try again later.',
           function(){ 
@@ -464,18 +468,15 @@ $(document).on('click', '.booking-widget .select-date', function(e){
 //  summonModalPanel(calendarWidget(state.baseDate));
 });
 
-function mainPanelVisible(){
-}
-
 function reloadMainModalPanel(ctor){
-  var panel = $('.modal-panel');
+  var panel = $('.booking-widget').parent();
   if(panel.length > 0){
-    var content = ctor('expand', panel.width(), panel.height());
+    var content = ctor($(window).width(), $(window).height());
     panel.empty();
     panel.append(content);
   }
   else{
-    summonFullScreenModalPanel(ctor);
+    summonFullScreenModal(ctor);
   }
 }
 
@@ -488,13 +489,14 @@ function reloadBookingUI(){
   var room = state.room;
   withAvailabilities(baseDate, dateAdd(baseDate, columns), {
     now: function(rooms, availabilities){
-      reloadMainModalPanel(function(mode, w, h){
+      reloadMainModalPanel(function(w, h){
+console.log(w, h);
         return bookingWidget(w, h, room, tickets, baseDate, rooms, availabilities);
       });
     },
     fetching: function(){
-      reloadMainModalPanel(function(mode, panelW, panelH){
-        return bookingWidget(panelW, panelH, room, tickets, baseDate, rooms, {}, 'loading');
+      reloadMainModalPanel(function(w, h){
+        return bookingWidget(w, h, room, tickets, baseDate, rooms, {}, 'loading');
       });
     },
     fetchDone: function(){
@@ -507,12 +509,11 @@ function reloadBookingUI(){
       dismissAllModals();
       console.log(message);
       with(HTML){
-        summonModalPanel(dialog('ERROR', message));
+        summonDialog(dialog('ERROR', message));
       }
     }
   });
 }
-
 
 
 $(document).on('click', '.dialog-dismiss', function(e){
@@ -537,7 +538,7 @@ $(document).on('change', 'select[name="ticket_count"]', function(){
     error: function(){
       loading.hide();
       button.show();
-      summonModalPanel(dialog('ERROR', priceError));
+      summonDialog(dialog('ERROR', priceError));
     }
   });
   loading.show();
