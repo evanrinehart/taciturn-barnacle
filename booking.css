@@ -1,3 +1,12 @@
+body {
+  background-color: black;
+  color: gray;
+}
+
+body.custom-modal-open {
+  overflow: hidden;
+}
+
 .modal-overlay {
   position: fixed;
   left: 0;
@@ -10,6 +19,10 @@
 .modal-overlay.dark {
   opacity: 0.5;
   background-color: black;
+}
+
+.overlay-scroll {
+  overflow-y: auto;
 }
 
 
@@ -135,11 +148,6 @@
   overflow-x: hidden;
 }
 
-body {
-  background-color: black;
-  color: gray;
-}
-
 .booking-widget .slot:hover{
   border: 1px solid gray;
 }
@@ -253,6 +261,62 @@ body {
 .booking-widget .bg-color4 { background-color: #FF82AB; }
 .booking-widget .bg-color5 { background-color: #FFDAB9; }
 .booking-widget .bg-color6 { background-color: #FFBBFF; }
+
+
+
+/* checkout */
+.custom-modal-tall {
+  color: #f0f0f0;
+  background-color: #0b0d11;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+@media screen and (min-width: 350px){
+  .custom-modal-tall {
+    width: 350px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+}
+
+
+.custom-modal-tall .close-button {
+  font-size: 30px;
+  float: right;
+  margin-top: -4px;
+  margin-right: 3px;
+  cursor: pointer;
+}
+
+.custom-modal-tall .close-button:hover {
+  color: white;
+}
+
+.custom-modal-tall .close-button:active {
+  color: black;
+}
+
+.custom-modal-tall .title {
+  text-align: center;
+  background-color: gray;
+  color: black;
+}
+
+.custom-modal-tall h1 {
+  font-size: 24px;
+  font-weight: normal;
+  margin: 0;
+}
+
+.custom-modal-tall {
+  font-size: 20px;
+  font-family: Roboto, sans-serif;
+  color: #f0f0f0;
+  background-color: #0b0d11;
+}
 
 .checkout-panel {
   font-size: 18px;

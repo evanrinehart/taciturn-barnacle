@@ -154,85 +154,83 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
 }
 
 function checkoutPanel(data){
-  return function(mode, w, h){
-    with(HTML){
-      function row(lab, name, value, readonly){
-        with(HTML){
-          var attrs = {name: name, value: value||''};
-          if(readonly) attrs.readonly = 'readonly';
-          return tr(td(label(lab)), td({class: 'right'}, input(attrs)));
-        }
+  with(HTML){
+    function row(lab, name, value, readonly){
+      with(HTML){
+        var attrs = {name: name, value: value||''};
+        if(readonly) attrs.readonly = 'readonly';
+        return tr(td(label(lab)), td({class: 'right'}, input(attrs)));
       }
-
-      var horizontal_rule = [
-        tr({class: 'space-row'}, td(), td()),
-        tr({class: 'rule-row'}, td(), td()),
-        tr({class: 'space-row'}, td(), td()),
-      ];
-
-      return element(div({class: 'checkout-panel', style:mode=='small'?'width: 350px':''},
-        div({class: 'title'},
-          h1({class: 'inline-block'}, "CHECKOUT"),
-          mode=='large'?a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'})):''
-        ),
-        div({class: 'checkout-body'},
-          input({type: 'hidden', name: 'room_id', value: data.room_id}),
-          input({type: 'hidden', name: 'total', value: data.price}),
-          table({class: 'checkout-form'},
-            tr(td(label('Room')), td({class: 'right'}, data.room_name)),
-            tr(td(label('Date')), td({class: 'right'}, formatHeaderDate(data.date))),
-            tr(td(label('Time')), td({class: 'right'}, formatTime(data.time))),
-            horizontal_rule,
-            tr(
-              td(label('Tickets')),
-              td({class: 'right'}, selectWithConfig({
-                selected: data.desired_ticket_count,
-                options: range(1, data.remaining_tickets).map(function(n){ return {value: n, label: n}; }),
-                attributes: {name: 'ticket_count'}
-              }))
-            ),
-            row('First Name', 'first_name'),
-            row('Last Name', 'last_name'),
-            row('Email', 'email'),
-            row('Phone', 'phone'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Dummy', 'dummy'),
-            row('Coupon Code', 'coupon_code'),
-            row('Card Number', 'card_number'),
-            row('Card CVV', 'card_cvv'),
-            tr(
-              td(label('Card Expiration')),
-              td({class: 'right'},
-                selectWithConfig({
-                  placeholder: 'Select Month',
-                  attributes: {name: 'card_month'},
-                  options: monthOptions
-                }),' ',
-                input({class: 'narrow', name: 'card_year', placeholder: 'YYYY'})
-              )
-            ),
-            horizontal_rule,
-            tr(td('TOTAL'), td({class: 'right'}, span({class: 'total'}, '$'+data.price.toFixed(2))))
-          )
-        ),
-        div({class: 'complete-purchase'},
-          span({class: 'loading-indicator'}, i({class: 'fa fa-spinner fa-spin'}), ' Processing ...'),
-          a({class: 'checkout-button'}, 'Complete Purchase'))
-      ));
     }
-  };
+
+    var horizontal_rule = [
+      tr({class: 'space-row'}, td(), td()),
+      tr({class: 'rule-row'}, td(), td()),
+      tr({class: 'space-row'}, td(), td()),
+    ];
+
+    return element(div({class: 'checkout-panel',},
+      div({class: 'title'},
+        h1({class: 'inline-block'}, "CHECKOUT"),
+        a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'}))
+      ),
+      div({class: 'checkout-body'},
+        input({type: 'hidden', name: 'room_id', value: data.room_id}),
+        input({type: 'hidden', name: 'total', value: data.price}),
+        table({class: 'checkout-form'},
+          tr(td(label('Room')), td({class: 'right'}, data.room_name)),
+          tr(td(label('Date')), td({class: 'right'}, formatHeaderDate(data.date))),
+          tr(td(label('Time')), td({class: 'right'}, formatTime(data.time))),
+          horizontal_rule,
+          tr(
+            td(label('Tickets')),
+            td({class: 'right'}, selectWithConfig({
+              selected: data.desired_ticket_count,
+              options: range(1, data.remaining_tickets).map(function(n){ return {value: n, label: n}; }),
+              attributes: {name: 'ticket_count'}
+            }))
+          ),
+          row('First Name', 'first_name'),
+          row('Last Name', 'last_name'),
+          row('Email', 'email'),
+          row('Phone', 'phone'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Dummy', 'dummy'),
+          row('Coupon Code', 'coupon_code'),
+          row('Card Number', 'card_number'),
+          row('Card CVV', 'card_cvv'),
+          tr(
+            td(label('Card Expiration')),
+            td({class: 'right'},
+              selectWithConfig({
+                placeholder: 'Select Month',
+                attributes: {name: 'card_month'},
+                options: monthOptions
+              }),' ',
+              input({class: 'narrow', name: 'card_year', placeholder: 'YYYY'})
+            )
+          ),
+          horizontal_rule,
+          tr(td('TOTAL'), td({class: 'right'}, span({class: 'total'}, '$'+data.price.toFixed(2))))
+        )
+      ),
+      div({class: 'complete-purchase'},
+        span({class: 'loading-indicator'}, i({class: 'fa fa-spinner fa-spin'}), ' Processing ...'),
+        a({class: 'checkout-button'}, 'Complete Purchase'))
+    ));
+  }
 }
 
 function roomColor(room){
@@ -321,7 +319,7 @@ $(document).on('click', '.booking-widget .slot', function(e){
   var room_id = data('room-id');
   fetchPrice(room_id, desired_ticket_count, {
     ok: function(price){
-      summonModalPanel(checkoutPanel({
+      summonTallModal(checkoutPanel({
         room_id: data('room-id'),
         room_name: data('room-name'),
         desired_ticket_count: desired_ticket_count,
@@ -491,7 +489,6 @@ function reloadBookingUI(){
   withAvailabilities(baseDate, dateAdd(baseDate, columns), {
     now: function(rooms, availabilities){
       reloadMainModalPanel(function(w, h){
-console.log(w, h);
         return bookingWidget(w, h, room, tickets, baseDate, rooms, availabilities);
       });
     },

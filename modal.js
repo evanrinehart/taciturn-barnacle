@@ -17,6 +17,7 @@ function probeHeight(content){
 }
 
 function summonDialog(content){
+  $('body').addClass('custom-modal-open');
   var screenH = $(window).height(); 
   var contentH = probeHeight(content).height;
   var overlay = $('<div class="modal-overlay"></div>');
@@ -34,6 +35,7 @@ function summonDialog(content){
 }
 
 function summonFullScreenModal(gui){
+  $('body').addClass('custom-modal-open');
   var screenW = $(window).width(); 
   var screenH = $(window).height(); 
   var overlay = $('<div class="modal-overlay"></div>');
@@ -50,50 +52,18 @@ function summonFullScreenModal(gui){
   $('body').append(overlay);
 }
 
-function summonModalPanel(gui){
-  var screenW = $(window).width(); 
-  var screenH = $(window).height(); 
-  var firstTry = gui('small');
-  var probe = $('<div class="custom-modal modal-panel modal-probe" style="visibility: hidden"></div>');
-  $('body').append(probe);
-  probe.append(firstTry);
-  var contentW = probe.width();
-  var contentH = probe.height();
-  probe.remove();
-  var overlay = $('<div class="modal-overlay"></div>');
-  var panel = $('<div class="custom-modal modal-panel"></div>');
+function summonTallModal(content){
+  $('body').addClass('custom-modal-open');
+  var overlay = $('<div class="modal-overlay overlay-scroll"></div>');
+  var panel = $('<div class="custom-modal-tall"></div>');
+  panel.append(content);
+  overlay.append(panel);
   modalStack.push(overlay);
-  //modalStack.push(panel);
-  if(contentW > screenW){
-    panel.css('width', screenW);
-    panel.css('height', screenH);
-    panel.css('left', 0);
-    panel.css('top', 0);
-    panel.append(gui('large', screenW, screenH));
-  }
-  else if(contentH > screenH){
-    panel.css('width', contentW);
-    panel.css('height', screenH-1);
-    panel.css('left', Math.floor(screenW/2 - contentW/2));
-    panel.css('top', 0);
-    panel.css('overflow-y', 'scroll');
-    panel.css('overflow-x', 'hidden');
-    panel.append(firstTry);
-  }
-  else{
-    panel.css('width', contentW);
-    //panel.css('height', contentH);
-    panel.css('left', Math.floor(screenW/2 - contentW/2));
-    panel.css('top', Math.floor(screenH/2 - contentH/2));
-    panel.append(firstTry);
-  }
   level++;
   overlay.css('z-index', level);
-//  level++;
-//  panel.css('z-index', level);
-  overlay.append(panel);
+  level++;
+  panel.css('z-index', level);
   $('body').append(overlay);
-//  $('body').append(panel);
 }
 
 function dismissModalPanel(){
@@ -103,6 +73,9 @@ function dismissModalPanel(){
   overlay.remove();
   level--;
   level--;
+  if(modalStack.length == 0){
+    $('body').removeClass('custom-modal-open');
+  }
 }
 
 function dismissAllModals(){
