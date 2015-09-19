@@ -44,7 +44,8 @@ function summonFullScreenModal(gui){
   overlay.css('z-index', level);
   level++;
   panel.css('z-index', level);
-  panel.css('height', screenH+'px');
+  panel.css('width', screenW+'px');
+  //panel.css('height', screenH+'px');
   overlay.append(panel);
   $('body').append(overlay);
 }

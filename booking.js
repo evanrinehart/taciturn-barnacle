@@ -305,7 +305,8 @@ $(window).on('resize', function(e){
   if(main.length > 0){
     var screenW = $(window).width();
     var screenH = $(window).height();
-    main.parent().css('height', screenH+'px');
+    main.parent().css('width', screenW+'px');
+//    main.parent().css('height', screenH+'px');
     if(main.find('.loading').length == 0){
       reloadBookingUI();
     }

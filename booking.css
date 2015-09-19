@@ -17,6 +17,7 @@
 .custom-fullscreen {
   color: #f0f0f0;
   background-color: #0b0d11;
+  height: 100%;
 }
 
 .custom-fullscreen .close-button {
