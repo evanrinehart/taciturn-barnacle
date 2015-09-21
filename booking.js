@@ -1,6 +1,8 @@
 var maxTicketCount = 7;
 var targetColumnWidth = 160;
 
+var stripePubkey = 'pk_test_lPTj3zvBP0Kl2DgWKguSzrmS';
+
 var priceError = 'There was a problem fetching pricing data. Please try again later.'
 
 var state = {
