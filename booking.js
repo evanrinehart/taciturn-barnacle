@@ -447,18 +447,20 @@ $(document).on('click', '.checkout-panel .checkout-button', function(e){
     else {
       var token = response.id;
       var data = {
+        event_id: field('event_id'),
         room_id: field('room_id'),
+        hold_id: $('[name="previous-hold-id"]').val(),
         ticket_count: ticket_count,
         first_name: field('first_name'),
         last_name: field('last_name'),
         email: field('email'),
         phone: field('phone'),
-        total: field('total'),
+        expecting_to_pay: field('total'),
         stripe_token: token
       };
       $.ajax({
         method: 'post',
-        url: 'https://booking.escapemyroom.com/api/booking',
+        url: 'https://booking.escapemyroom.com/api/book',
         data: data,
         success: function(response){
           console.log(response);
