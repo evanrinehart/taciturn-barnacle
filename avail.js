@@ -1,7 +1,30 @@
 /* local caching of availability data */
 
+/*
+schema for the global variable `db'
+'date' => [{
+  event_id: 'ZXCZCZXCZXCZXC',
+  room_id: 'ABCDEF',
+  room_name: 'ABC Room',
+  tickets_remaining: 7,
+  time: '12:00:00'
+}]
+*/
 var db = {};
+
+/*
+schema for global variable `rooms'
+[{
+  room_id: 'ABCDEF',
+  name: 'ABC Room',
+  price: 28
+}]
+*/
 var rooms = null;
+
+
+/* the users current hold, if any */
+var my_hold_id = null;
 
 function dataPresentForDate(d){
   return db.hasOwnProperty(encodeDate(d));
@@ -46,6 +69,7 @@ function fetchData(startDate, endDate, okCb, errorCb){
         return;
       }
 
+/*
       function replicate(a, n){
         var i, j, L;
         var result = [];
@@ -57,9 +81,10 @@ function fetchData(startDate, endDate, okCb, errorCb){
         }
         return result;
       }
+*/
 
       for(var k in results){
-        db[k] = replicate(results[k], 10);
+        db[k] = results[k];
       }
 
       for(var d=startDate; d<=endDate; d=dateAdd(d,1)){
@@ -108,24 +133,39 @@ function withAvailabilities(startDate, endDate, callbacks){
   });
 }
 
-function fetchPrice(room_id, ticket_count, callbacks){
+/*
+{
+  room_id:
+  event_id:
+  ticket_quantity:
+  promo_code:
+  previous_hold_id:
+  callbacks: { ok: error: }
+}
+*/
+function fetchPrice(params){
   $.ajax({
-    url: "https://booking.escapemyroom.com/api/pricing",
+    method: 'post',
+    url: "https://booking.escapemyroom.com/api/quote",
     data: {
-      room_id: room_id,
-      ticket_count: ticket_count
+      details: {
+        event_id: params.event_id,
+        room_id: params.room_id,
+        ticket_quantity: params.ticket_quantity,
+        promo_code: params.promo_code
+      },
+      previous_hold_id: params.previous_hold_id
     },
     success: function(data){
-console.log(data);
       if(data.ok){
-        callbacks.ok(data.ok);
+        params.callbacks.ok(data.ok);
       }
       else{
-        callbacks.error();
+        params.callbacks.error();
       }
     },
     error: function(xhr){
-      callbacks.error();
+      params.callbacks.error();
     }
   });
 }

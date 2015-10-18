@@ -103,6 +103,7 @@ var HTML;
   function select(){ return tags('select', arguments); }
   function option(){ return tags('option', arguments); }
   function label(){ return tags('label', arguments); }
+  function form(){ return tags('form', arguments); }
   function input(as){ return tag('input', as); }
   function br(as){ return tag('br', as); }
   function hr(as){ return tag('hr', as); }
@@ -184,6 +185,7 @@ var HTML;
     img: img,
     select: select,
     option: option,
+    form: form,
     selectWithConfig: selectWithConfig,
   };
 })();

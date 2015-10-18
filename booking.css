@@ -347,8 +347,13 @@ body.custom-modal-open {
   width: 35px;
 }
 
-.checkout-panel input {
-  width: 135px;
+.checkout-panel .wide {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.checkout-panel input.half {
+  width: 50%;
 }
 
 .checkout-panel .complete-purchase {
@@ -372,8 +377,20 @@ body.custom-modal-open {
   background-color: white;
 }
 
-.checkout-panel .loading-indicator {
+.checkout-panel .small {
+  font-size: 14px;
+}
+
+.checkout-panel .ui-link {
+  color: cyan;
+}
+
+.checkout-panel .processing-indicator {
   font-size: 18px;
+  display: none;
+}
+
+.checkout-panel .stripe-form {
   display: none;
 }
 
@@ -429,3 +446,4 @@ body.custom-modal-open {
   color: black;
   background-color: white;
 }
+

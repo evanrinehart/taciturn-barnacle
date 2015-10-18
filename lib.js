@@ -69,3 +69,14 @@ function encodeDate(d){
     pad(d.getDate().toString())
   ].join('-');
 }
+
+function money(amount){
+  var neg = amount < 0 ? '-' : '';
+  return neg+'$'+Math.abs(amount).toFixed(2);
+}
+
+
+function flip(){
+  if(Math.random() < 0.5) return true;
+  else return false;
+}

@@ -1,12 +1,15 @@
 var maxTicketCount = 7;
 var targetColumnWidth = 160;
 
+var old_ticket_quantity_kludge = null;
+
 var stripePubkey = 'pk_test_lPTj3zvBP0Kl2DgWKguSzrmS';
+Stripe.setPublishableKey(stripePubkey);
 
 var priceError = 'There was a problem fetching pricing data. Please try again later.'
 
 var state = {
-  baseDate: new Date(2015, 8, 17),
+  baseDate: new Date(2015, 10, 17),
   room: undefined,
   ticketCount: 1
 };
@@ -57,7 +60,7 @@ function roomSelect(roomId, rooms){
     return selectWithConfig({
       options: [].concat(
         [{value: 'any-room', label: 'Any Room'}],
-        rooms.map(function(r){ return {value: r.id, label: r.name}; })
+        rooms.map(function(r){ return {value: r.room_id, label: r.name}; })
       ),
       selected: roomId,
       attributes: { name: 'select-room' }
@@ -97,6 +100,7 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
           a({class: 'modal-dismiss close-button'}, i({class: 'fa fa-close'}))
         ),
         div({class: 'filter-section'},
+          input({type: 'hidden', name: 'previous-hold-id', value: ''}),
           div(
             span(roomSelect(room, rooms||[])),
             span(label('Tickets'), ' ', ticketSelect(ticketCount))
@@ -129,8 +133,9 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
                       contents = slots.map(function(slot){
                         return div(
                           {
-                            class: 'result slot '+roomColor(slot.room_name),
+                            'class': 'result slot '+roomColor(slot.room_name),
                             'data-room-id': slot.room_id,
+                            'data-event-id': slot.event_id,
                             'data-room-name': slot.room_name,
                             'data-date': encodeDate(d),
                             'data-time': slot.time,
@@ -156,19 +161,32 @@ function bookingWidget(width, height, room, ticketCount, baseDate, rooms, availa
 }
 
 function checkoutPanel(data){
+
   with(HTML){
     function row(lab, name, value, readonly){
       with(HTML){
-        var attrs = {name: name, value: value||''};
+        var attrs = {name: name, value: value||'', class: 'wide'};
         if(readonly) attrs.readonly = 'readonly';
-        return tr(td(label(lab)), td({class: 'right'}, input(attrs)));
+        return tr(td({style: 'width:170px'}, label(lab)), td({class: 'right'}, input(attrs)));
+      }
+    }
+
+    function usedCode(code, charge){
+      with(HTML){
+        return tr(
+          td(
+            code, ' ',
+            '(', a({href:'#', class: 'ui-link remove-code'}, 'remove'), ')'
+          ),
+          td({class: 'right'}, money(charge))
+        );
       }
     }
 
     var horizontal_rule = [
       tr({class: 'space-row'}, td(), td()),
       tr({class: 'rule-row'}, td(), td()),
-      tr({class: 'space-row'}, td(), td()),
+      tr({class: 'space-row'}, td(), td())
     ];
 
     return element(div({class: 'checkout-panel',},
@@ -178,7 +196,14 @@ function checkoutPanel(data){
       ),
       div({class: 'checkout-body'},
         input({type: 'hidden', name: 'room_id', value: data.room_id}),
-        input({type: 'hidden', name: 'total', value: data.price}),
+        input({type: 'hidden', name: 'event_id', value: data.event_id}),
+        input({type: 'hidden', name: 'total', value: ''}),
+        form({class: 'stripe-form'},
+          input({type: 'hidden', 'data-stripe': 'number'}),
+          input({type: 'hidden', 'data-stripe': 'cvc'}),
+          input({type: 'hidden', 'data-stripe': 'exp-month'}),
+          input({type: 'hidden', 'data-stripe': 'exp-year'})
+        ),
         table({class: 'checkout-form'},
           tr(td(label('Room')), td({class: 'right'}, data.room_name)),
           tr(td(label('Date')), td({class: 'right'}, formatHeaderDate(data.date))),
@@ -189,47 +214,58 @@ function checkoutPanel(data){
             td({class: 'right'}, selectWithConfig({
               selected: data.desired_ticket_count,
               options: range(1, data.remaining_tickets).map(function(n){ return {value: n, label: n}; }),
-              attributes: {name: 'ticket_count'}
+              attributes: {name: 'ticket_count', style: 'width:100%'}
             }))
           ),
           row('First Name', 'first_name'),
           row('Last Name', 'last_name'),
           row('Email', 'email'),
           row('Phone', 'phone'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Dummy', 'dummy'),
-          row('Coupon Code', 'coupon_code'),
+          horizontal_rule,
+/*
+          tr(td('Price'), td({class: 'right'}, span({class: 'total'}, '$'+data.price.toFixed(2)))),
+          usedCode('ABC123', -9),
+          usedCode('XYZ000', -3),
+          tr(
+            td(""),
+            td({class: 'right'},
+              input({class: 'half', name: 'promo-code'})
+            )
+          ),
+          tr(
+            td(""),
+            td({class: 'right'},
+              a({href:'#', class: 'float-right ui-link small add-code'}, 'Use gift/promo code')
+            )
+          ),
+          tr({class: 'space-row'}, td(), td()),
+*/
+          tr(
+            td('TOTAL'),
+            td({class: 'right'},
+              span({class: 'calculating-indicator'},
+                i({class: 'fa fa-spinner fa-spin'}), ' Calculating ...'
+              ),
+              span({class: 'total'}, '')
+            )
+          ),
           row('Card Number', 'card_number'),
-          row('Card CVV', 'card_cvv'),
+          row('Card CVC', 'card_cvc'),
           tr(
             td(label('Card Expiration')),
             td({class: 'right'},
               selectWithConfig({
-                placeholder: 'Select Month',
+                placeholder: 'Month',
                 attributes: {name: 'card_month'},
                 options: monthOptions
               }),' ',
               input({class: 'narrow', name: 'card_year', placeholder: 'YYYY'})
             )
-          ),
-          horizontal_rule,
-          tr(td('TOTAL'), td({class: 'right'}, span({class: 'total'}, '$'+data.price.toFixed(2))))
+          )
         )
       ),
       div({class: 'complete-purchase'},
-        span({class: 'loading-indicator'}, i({class: 'fa fa-spinner fa-spin'}), ' Processing ...'),
+        span({class: 'processing-indicator'}, i({class: 'fa fa-spinner fa-spin'}), ' Processing ...'),
         a({class: 'checkout-button'}, 'Complete Purchase'))
     ));
   }
@@ -315,24 +351,44 @@ $(window).on('resize', function(e){
 
 $(document).on('click', '.booking-widget .slot', function(e){
   e.preventDefault();
+  var previous_hold_id = $('[name="previous-hold-id"]').val();
   var desired_ticket_count = $('[name="select-ticket-count"]').val();
   var ele = $(this);
   function data(name){ return ele.attr('data-'+name); }
   var room_id = data('room-id');
-  fetchPrice(room_id, desired_ticket_count, {
-    ok: function(price){
-      summonTallModal(checkoutPanel({
-        room_id: data('room-id'),
-        room_name: data('room-name'),
-        desired_ticket_count: desired_ticket_count,
-        remaining_tickets: data('remaining-tickets'),
-        date: readDate(data('date')),
-        time: data('time'),
-        price: price
-      }));
-    },
-    error: function(){
-      summonDialog(dialog('ERROR', priceError));
+  var event_id = data('event-id');
+  summonTallModal(checkoutPanel({
+    room_id: data('room-id'),
+    event_id: data('event-id'),
+    room_name: data('room-name'),
+    desired_ticket_count: desired_ticket_count,
+    remaining_tickets: data('remaining-tickets'),
+    date: readDate(data('date')),
+    time: data('time')
+  }));
+
+  fetchPrice({
+    room_id: room_id,
+    event_id: event_id,
+    ticket_quantity: desired_ticket_count,
+    previous_hold_id: previous_hold_id,
+    callbacks: {
+      ok: function(result){
+        console.log(result);
+        var total = result.total;
+        old_ticket_quantity_kludge = desired_ticket_count;
+        $('[name="previous-hold-id"]').val(result.hold_id);
+        var panel = $('.checkout-panel');
+        panel.find('.calculating-indicator').hide();
+        panel.find('[name="total"]').val(total);
+        panel.find('.total').text(money(total));
+        panel.find('.total').show();
+      },
+      error: function(problem){
+        summonDialog(dialog('ERROR', priceError, function(){
+          dismissModalPanel();
+        }));
+      }
     }
   });
 });
@@ -369,50 +425,74 @@ $(document).on('click', '.checkout-panel .checkout-button', function(e){
   e.preventDefault();
   var button = $(this);
   var form = $(this).closest('.checkout-panel');
-  var loading = form.find('.loading-indicator');
+  var loading = form.find('.processing-indicator');
   var field = function(name){ return form.find('[name="'+name+'"]').val(); };
   var ticket_count = parseInt(field('ticket_count'));
-  var data = {
-    room_id: field('room_id'),
-    ticket_count: ticket_count,
-    first_name: field('first_name'),
-    last_name: field('last_name'),
-    email: field('email'),
-    phone: field('phone'),
-    coupon_code: field('coupon_code'),
-    card_number: field('card_number'),
-    card_cvv: field('card_cvv'),
-    card_month: field('card_month'),
-    card_year: field('card_year'),
-    total: field('total')
-  };
-  $.ajax({
-    method: 'post',
-    url: 'https://booking.escapemyroom.com/api/booking',
-    data: data,
-    success: function(response){
-      if(response.ok === true){
-        summonDialog(dialog(
-          'COMPLETE',
-          "Checkout Complete! Check your email for tickets and the receipt.",
-          function(){ dismissAllModals(); }
-        ));
-      }
-      else {
-        summonDialog(dialog(
-          'ERROR',
-          'Sorry, a problem occurred with your purchase. Try again later.',
-          function(){ 
-            button.show();
-            loading.hide();
+  var stripe_form = form.find('.stripe-form');
+  stripe_form.find('[data-stripe="number"]').val(field('card_number'));
+  stripe_form.find('[data-stripe="cvc"]').val(field('card_cvc'));
+  stripe_form.find('[data-stripe="exp-month"]').val(field('card_month'));
+  stripe_form.find('[data-stripe="exp-year"]').val(field('card_year'));
+  Stripe.card.createToken(stripe_form, function(status, response){
+    if (response.error) {
+      summonDialog(dialog(
+        'ERROR',
+        response.error.message,
+        function(){ 
+          button.show();
+          loading.hide();
+        }
+      ));
+    }
+    else {
+      var token = response.id;
+      var data = {
+        room_id: field('room_id'),
+        ticket_count: ticket_count,
+        first_name: field('first_name'),
+        last_name: field('last_name'),
+        email: field('email'),
+        phone: field('phone'),
+        total: field('total'),
+        stripe_token: token
+      };
+      $.ajax({
+        method: 'post',
+        url: 'https://booking.escapemyroom.com/api/booking',
+        data: data,
+        success: function(response){
+          console.log(response);
+          if(response.ok){
+            summonDialog(dialog(
+              'COMPLETE',
+              "Checkout Complete! Check your email for tickets and the receipt.",
+              function(){ dismissAllModals(); }
+            ));
           }
-        ));
-      }
-      //loading.hide();
-      //form.show();
-    },
-    error: function(xhr){
-      console.log(xhr);
+          else {
+            summonDialog(dialog(
+              'ERROR',
+              'Sorry, a problem occurred with your purchase. Try again later.',
+              function(){ 
+                button.show();
+                loading.hide();
+              }
+            ));
+          }
+        },
+        error: function(xhr){
+          console.log(xhr);
+          summonDialog(dialog(
+            'ERROR',
+            'Sorry, a problem occurred with your purchase. Try again later.',
+            function(){ 
+              button.show();
+              loading.hide();
+            }
+          ));
+        }
+      });
+
     }
   });
 
@@ -523,24 +603,44 @@ $(document).on('click', '.dialog-dismiss', function(e){
   if(onClose) onClose();
 });
 
+
 $(document).on('change', 'select[name="ticket_count"]', function(){
+  var previous_hold_id = $('[name="previous-hold-id"]').val();
   var form = $(this).closest('.checkout-panel');
-  var loading = form.find('.loading-indicator');
+  var loading = form.find('.calculating-indicator');
   var button = form.find('.checkout-button');
   var room_id = form.find('[name="room_id"]').val();
+  var event_id = form.find('[name="event_id"]').val();
+  var promo_code = form.find('[name="promo_code"]').val();
   var ticket_count = $(this).val();
-  fetchPrice(room_id, ticket_count, {
-    ok: function(price){
-      loading.hide();
-      button.show();
-      form.find('span.total').text('$'+price.toFixed(2));
-    },
-    error: function(){
-      loading.hide();
-      button.show();
-      summonDialog(dialog('ERROR', priceError));
+  var total_span = form.find('span.total');
+  var total_input = form.find('[name="total"]');
+  fetchPrice({
+    room_id: room_id,
+    event_id: event_id,
+    ticket_quantity: ticket_count,
+    previous_hold_id: previous_hold_id,
+    promo_code: promo_code,
+    callbacks: {
+      ok: function(result){
+        console.log(result);
+        $('[name="previous-hold-id"]').val(result.hold_id);
+        var total = result.total;
+        old_ticket_quantity_kludge = ticket_count;
+        loading.hide();
+        button.show();
+        total_span.text('$'+total.toFixed(2));
+        total_span.show();
+        total_input.val(total);
+      },
+      error: function(){
+        loading.hide();
+        total_span.show();
+        form.find('[name="ticket_count"]').val(old_ticket_quantity_kludge);
+        summonDialog(dialog('ERROR', priceError));
+      }
     }
   });
   loading.show();
-  button.hide();
+  total_span.hide();
 });
