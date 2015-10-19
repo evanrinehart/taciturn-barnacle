@@ -144,6 +144,8 @@ function withAvailabilities(startDate, endDate, callbacks){
 }
 */
 function fetchPrice(params){
+  var priceError = 'There was a problem fetching pricing data. Please try again later.';
+
   $.ajax({
     method: 'post',
     url: "https://booking.escapemyroom.com/api/quote",
@@ -161,11 +163,17 @@ function fetchPrice(params){
         params.callbacks.ok(data.ok);
       }
       else{
-        params.callbacks.error();
+console.log(data);
+        params.callbacks.error(priceError);
       }
     },
     error: function(xhr){
-      params.callbacks.error();
+      if(xhr.status == 400){
+        params.callbacks.error(xhr.responseText);
+      }
+      else{
+        params.callbacks.error(priceError);
+      }
     }
   });
 }

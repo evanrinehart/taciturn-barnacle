@@ -6,10 +6,8 @@ var old_ticket_quantity_kludge = null;
 var stripePubkey = 'pk_test_lPTj3zvBP0Kl2DgWKguSzrmS';
 Stripe.setPublishableKey(stripePubkey);
 
-var priceError = 'There was a problem fetching pricing data. Please try again later.'
-
 var state = {
-  baseDate: new Date(2015, 10, 17),
+  baseDate: dateToday(),
   room: undefined,
   ticketCount: 1
 };
@@ -221,6 +219,7 @@ function checkoutPanel(data){
           row('Last Name', 'last_name'),
           row('Email', 'email'),
           row('Phone', 'phone'),
+          row('Promo Code', 'promo_code'),
           horizontal_rule,
 /*
           tr(td('Price'), td({class: 'right'}, span({class: 'total'}, '$'+data.price.toFixed(2)))),
@@ -326,8 +325,11 @@ $(document).on('click', '.modal-overlay', function(e){
 
 $(document).on('click', '.booking-widget a.left-arrow', function(e){
   e.preventDefault();
-  state.baseDate = dateAdd(state.baseDate, -1);
-  reloadBookingUI();
+  var today = dateToday();
+  if(state.baseDate >= today){
+    state.baseDate = dateAdd(state.baseDate, -1);
+    reloadBookingUI();
+  }
 });
 
 $(document).on('click', '.booking-widget a.right-arrow', function(e){
@@ -374,7 +376,6 @@ $(document).on('click', '.booking-widget .slot', function(e){
     previous_hold_id: previous_hold_id,
     callbacks: {
       ok: function(result){
-        console.log(result);
         var total = result.total;
         old_ticket_quantity_kludge = desired_ticket_count;
         $('[name="previous-hold-id"]').val(result.hold_id);
@@ -385,7 +386,7 @@ $(document).on('click', '.booking-widget .slot', function(e){
         panel.find('.total').show();
       },
       error: function(problem){
-        summonDialog(dialog('ERROR', priceError, function(){
+        summonDialog(dialog('ERROR', problem, function(){
           dismissModalPanel();
         }));
       }
@@ -463,7 +464,6 @@ $(document).on('click', '.checkout-panel .checkout-button', function(e){
         url: 'https://booking.escapemyroom.com/api/book',
         data: data,
         success: function(response){
-          console.log(response);
           if(response.ok){
             summonDialog(dialog(
               'COMPLETE',
@@ -503,6 +503,9 @@ $(document).on('click', '.checkout-panel .checkout-button', function(e){
 
 });
 
+$(document).on('change', '.checkout-panel [name="promo_code"]', function(e){
+  recalculatePrice();
+});
 
 /*
 function summonSelectoPanel(options, action){
@@ -605,6 +608,47 @@ $(document).on('click', '.dialog-dismiss', function(e){
   if(onClose) onClose();
 });
 
+function recalculatePrice(){
+  var previous_hold_id = $('[name="previous-hold-id"]').val();
+  var form = $('.checkout-panel');
+  var loading = form.find('.calculating-indicator');
+  var button = form.find('.checkout-button');
+  var room_id = form.find('[name="room_id"]').val();
+  var event_id = form.find('[name="event_id"]').val();
+  var promo_code = form.find('[name="promo_code"]').val();
+  var ticket_count = form.find('[name="ticket_count"]').val();
+  var total_span = form.find('span.total');
+  var total_input = form.find('[name="total"]');
+  fetchPrice({
+    room_id: room_id,
+    event_id: event_id,
+    ticket_quantity: ticket_count,
+    previous_hold_id: previous_hold_id,
+    promo_code: promo_code,
+    callbacks: {
+      ok: function(result){
+        console.log(result);
+        $('[name="previous-hold-id"]').val(result.hold_id);
+        var total = result.total;
+        old_ticket_quantity_kludge = ticket_count;
+        loading.hide();
+        button.show();
+        total_span.text('$'+total.toFixed(2));
+        total_span.show();
+        total_input.val(total);
+      },
+      error: function(problem){
+        loading.hide();
+        total_span.show();
+        form.find('[name="ticket_count"]').val(old_ticket_quantity_kludge);
+        summonDialog(dialog('ERROR', problem));
+      }
+    }
+  });
+  loading.show();
+  total_span.hide();
+}
+
 
 $(document).on('change', 'select[name="ticket_count"]', function(){
   var previous_hold_id = $('[name="previous-hold-id"]').val();
@@ -635,11 +679,11 @@ $(document).on('change', 'select[name="ticket_count"]', function(){
         total_span.show();
         total_input.val(total);
       },
-      error: function(){
+      error: function(problem){
         loading.hide();
         total_span.show();
         form.find('[name="ticket_count"]').val(old_ticket_quantity_kludge);
-        summonDialog(dialog('ERROR', priceError));
+        summonDialog(dialog('ERROR', problem));
       }
     }
   });
